@@ -1,0 +1,9 @@
+{
+  "name": "ics-deadline-dashboard",
+  "version": "1.0.0",
+  "description": "Local ICS calendar deadline dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

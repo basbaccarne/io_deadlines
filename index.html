@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deadline Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #f5f3ee;
+            --surface: #faf9f6;
+            --surface2: #efede8;
+            --border: rgba(0, 0, 0, 0.1);
+            --border-strong: rgba(0, 0, 0, 0.18);
+            --text: #1a1915;
+            --text-2: #6b6a64;
+            --text-3: #9b9a94;
+            --accent: #2a4a2e;
+            --accent-light: #d4e8d5;
+            --red: #8b2020;
+            --red-bg: #fdecea;
+            --amber: #7a4a0a;
+            --amber-bg: #fdf3e0;
+            --green: #1a5c2a;
+            --green-bg: #e4f5e8;
+            --blue: #1a3a6b;
+            --blue-bg: #e4ecf8;
+            --radius: 6px;
+            --radius-lg: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        .shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .main {
+            flex: 1;
+            padding: 2.5rem 2.5rem 4rem;
+            max-width: 860px;
+        }
+
+        /* Sidebar */
+        .sidebar-header {
+            padding: 1.75rem 1.5rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: 20px;
+            color: var(--text);
+            line-height: 1.2;
+            margin-bottom: 3px;
+        }
+
+        .sidebar-title em {
+            font-style: italic;
+            color: var(--text-2);
+        }
+
+        .sidebar-sub {
+            font-size: 11px;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .sidebar-section {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-section-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .cal-url-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .cal-url-row input {
+            flex: 1;
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            padding: 6px 8px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .cal-url-row input:focus {
+            border-color: var(--border-strong);
+        }
+
+        .cal-url-row input::placeholder {
+            color: var(--text-3);
+        }
+
+        .btn-rm {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-3);
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            flex-shrink: 0;
+            font-size: 14px;
+            transition: background 0.1s, color 0.1s;
+        }
+
+        .btn-rm:hover {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .cal-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .btn-add-cal {
+            width: 100%;
+            padding: 6px;
+            font-size: 12px;
+            background: none;
+            border: 1px dashed var(--border-strong);
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--text-2);
+            margin-top: 4px;
+            transition: background 0.1s;
+        }
+
+        .btn-add-cal:hover {
+            background: var(--surface2);
+        }
+
+        .btn-load {
+            width: 100%;
+            padding: 9px 14px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: opacity 0.15s;
+            margin-top: 4px;
+        }
+
+        .btn-load:hover {
+            opacity: 0.88;
+        }
+
+        .btn-load:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .filter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 10px;
+            border-radius: var(--radius);
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-2);
+            transition: background 0.1s;
+            text-align: left;
+        }
+
+        .filter-btn:hover {
+            background: var(--surface2);
+        }
+
+        .filter-btn.active {
+            background: var(--surface2);
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .filter-count {
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            background: var(--surface2);
+            color: var(--text-3);
+            padding: 1px 6px;
+            border-radius: 10px;
+        }
+
+        .filter-btn.active .filter-count {
+            background: var(--border-strong);
+            color: var(--text);
+        }
+
+        .cal-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .cal-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1rem 1.5rem;
+        }
+
+        .refresh-info {
+            font-size: 11px;
+            color: var(--text-3);
+        }
+
+        /* Main content */
+        .page-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: 36px;
+            line-height: 1.1;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .page-title em {
+            font-style: italic;
+        }
+
+        .page-date {
+            font-size: 13px;
+            color: var(--text-3);
+            margin-bottom: 2rem;
+        }
+
+        /* Stats row */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.1rem;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-family: 'Instrument Serif', serif;
+            font-size: 32px;
+            line-height: 1;
+            color: var(--text);
+        }
+
+        .stat-value.red {
+            color: var(--red);
+        }
+
+        .stat-value.amber {
+            color: var(--amber);
+        }
+
+        .stat-value.green {
+            color: var(--green);
+        }
+
+        /* Timeline */
+        .day-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .day-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .day-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .day-today-pill {
+            background: var(--accent);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            padding: 2px 7px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .event-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 12px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 6px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            cursor: default;
+        }
+
+        .event-card:hover {
+            border-color: var(--border-strong);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .event-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding-top: 2px;
+        }
+
+        .urgency-bar {
+            width: 3px;
+            height: 36px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .event-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .event-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .event-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .badge-overdue {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .badge-today {
+            background: var(--amber-bg);
+            color: var(--amber);
+        }
+
+        .badge-soon {
+            background: var(--amber-bg);
+            color: var(--amber);
+        }
+
+        .badge-upcoming {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .badge-later {
+            background: var(--surface2);
+            color: var(--text-2);
+        }
+
+        .bar-overdue {
+            background: var(--red);
+        }
+
+        .bar-today {
+            background: #e08a00;
+        }
+
+        .bar-soon {
+            background: #c47600;
+        }
+
+        .bar-upcoming {
+            background: var(--green);
+        }
+
+        .bar-later {
+            background: #b0afa9;
+        }
+
+        .cal-chip {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid;
+            font-family: 'DM Sans', sans-serif;
+            background: transparent;
+        }
+
+        .event-time {
+            font-size: 11px;
+            color: var(--text-3);
+            font-family: 'DM Mono', monospace;
+        }
+
+        .event-desc {
+            font-size: 12px;
+            color: var(--text-2);
+            margin-top: 5px;
+            line-height: 1.5;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .event-location {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-top: 3px;
+        }
+
+        /* States */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-3);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: 22px;
+            color: var(--text-2);
+            margin-bottom: 6px;
+        }
+
+        .empty-sub {
+            font-size: 13px;
+        }
+
+        .status-bar {
+            font-size: 12px;
+            color: var(--text-2);
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-err {
+            font-size: 12px;
+            color: var(--red);
+            background: var(--red-bg);
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            margin-top: 8px;
+            border-left: 3px solid var(--red);
+        }
+
+        .spinner {
+            display: inline-block;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Staggered entry animation */
+        .event-card {
+            animation: fadeUp 0.2s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .event-card:nth-child(1) {
+            animation-delay: 0.02s;
+        }
+
+        .event-card:nth-child(2) {
+            animation-delay: 0.04s;
+        }
+
+        .event-card:nth-child(3) {
+            animation-delay: 0.06s;
+        }
+
+        .event-card:nth-child(4) {
+            animation-delay: 0.08s;
+        }
+
+        .event-card:nth-child(5) {
+            animation-delay: 0.10s;
+        }
+
+        @media (max-width: 800px) {
+            .shell {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+
+            .main {
+                padding: 1.5rem;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+
+        <!-- Sidebar -->
+        <aside class="sidebar" role="complementary" aria-label="Calendar configuration">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Deadline<br /><em>Dashboard</em></div>
+                <div class="sidebar-sub">ICS Calendar Aggregator</div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Calendar feeds</div>
+                <div id="url-list"></div>
+                <button class="btn-add-cal" onclick="addRow()">+ add calendar</button>
+            </div>
+
+            <div class="sidebar-section">
+                <button class="btn-load" id="load-btn" onclick="loadAll()">Load calendars</button>
+                <div id="load-status"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Filter</div>
+                <div class="filter-list" id="filter-list"></div>
+            </div>
+
+            <div class="sidebar-section" id="legend-section" style="display:none">
+                <div class="sidebar-section-label">Calendars</div>
+                <div class="cal-legend" id="cal-legend"></div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="refresh-info" id="refresh-info"></div>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main" role="main">
+            <div class="page-title">Your <em>upcoming</em><br />deadlines</div>
+            <div class="page-date" id="page-date"></div>
+
+            <div class="stats" id="stats" style="display:none"></div>
+
+            <div id="content">
+                <div class="empty-state">
+                    <div class="empty-icon">🗓</div>
+                    <div class="empty-title">No calendars loaded yet</div>
+                    <div class="empty-sub">Add ICS feed URLs in the sidebar and click "Load calendars"</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const CAL_COLORS = [
+            '#2a6e3f', '#1a3a6b', '#7a2a2a', '#4a1a6b', '#6b4a1a',
+            '#1a5a6b', '#6b1a4a', '#2a4a6b'
+        ];
+
+        let allEvents = [];
+        let calMeta = [];
+        let activeFilter = 'all';
+        let colorIdx = 0;
+
+        // ── Init ──────────────────────────────────────────────────────────────────
+        document.getElementById('page-date').textContent = new Date().toLocaleDateString('en-GB', {
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+
+        (async () => {
+            const saved = await fetch('/api/calendars').then(r => r.json()).catch(() => []);
+            if (saved.length) {
+                saved.forEach(c => addRow(c.url));
+            } else {
+                addRow('https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?token=agz66z27vv9iv7s810e9b');
+            }
+            renderFilters();
+        })();
+
+        // ── URL management ────────────────────────────────────────────────────────
+        function addRow(val = '') {
+            const list = document.getElementById('url-list');
+            const id = 'r' + Date.now() + Math.random();
+            const n = list.children.length + 1;
+            const color = CAL_COLORS[colorIdx % CAL_COLORS.length];
+            colorIdx++;
+            const d = document.createElement('div');
+            d.className = 'cal-url-row'; d.id = id; d.dataset.color = color;
+            d.innerHTML = `
+    <span class="cal-dot" style="background:${color}"></span>
+    <input type="text" placeholder="https://…/feed.ics" value="${esc(val)}" spellcheck="false" />
+    <button class="btn-rm" onclick="rmRow('${id}')" aria-label="Remove calendar" title="Remove">✕</button>
+  `;
+            list.appendChild(d);
+        }
+
+        function rmRow(id) {
+            document.getElementById(id)?.remove();
+        }
+
+        function getCalInputs() {
+            return [...document.querySelectorAll('.cal-url-row')].map(r => ({
+                url: r.querySelector('input').value.trim(),
+                color: r.dataset.color
+            })).filter(c => c.url);
+        }
+
+        // ── Fetch ─────────────────────────────────────────────────────────────────
+        async function loadAll() {
+            const inputs = getCalInputs();
+            if (!inputs.length) { setStatus('Add at least one ICS URL.', true); return; }
+
+            allEvents = []; calMeta = [];
+            const btn = document.getElementById('load-btn');
+            btn.disabled = true;
+            document.getElementById('stats').style.display = 'none';
+            setStatus('<span><span class="spinner">⟳</span> Fetching…</span>');
+
+            try {
+                await fetch('/api/calendars', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ calendars: inputs })
+                });
+            } catch { }
+
+            try {
+                const res = await fetch('/api/fetch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urls: inputs.map(c => ({ url: c.url, color: c.color })) })
+                });
+                const results = await res.json();
+
+                const errors = [];
+                results.forEach((r, i) => {
+                    const color = inputs[i]?.color || CAL_COLORS[i % CAL_COLORS.length];
+                    if (r.error) { errors.push(`${r.name}: ${r.error}`); return; }
+                    calMeta.push({ name: r.name, color, url: r.url });
+                    r.events.forEach(e => allEvents.push({ ...e, calName: r.name, color }));
+                });
+
+                allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                if (!allEvents.length && errors.length) {
+                    setStatus(`Failed to load. ${errors[0]}`, true);
+                } else {
+                    const errNote = errors.length ? `<div class="status-err">⚠ ${errors.join(' · ')}</div>` : '';
+                    document.getElementById('load-status').innerHTML = errNote;
+                    const t = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                    document.getElementById('refresh-info').textContent = `Last loaded at ${t}`;
+                }
+
+                activeFilter = 'all';
+                renderAll();
+            } catch (e) {
+                setStatus('Server error: ' + e.message, true);
+            }
+
+            btn.disabled = false;
+        }
+
+        // ── Render ────────────────────────────────────────────────────────────────
+        function urgency(dateStr) {
+            const now = new Date(); now.setHours(0, 0, 0, 0);
+            const d = new Date(dateStr); d.setHours(0, 0, 0, 0);
+            const diff = Math.round((d - now) / 86400000);
+            if (diff < 0) return { label: 'Overdue', cls: 'overdue', diff };
+            if (diff === 0) return { label: 'Today', cls: 'today', diff };
+            if (diff <= 3) return { label: `In ${diff}d`, cls: 'soon', diff };
+            if (diff <= 14) return { label: `In ${diff}d`, cls: 'upcoming', diff };
+            return { label: `In ${diff}d`, cls: 'later', diff };
+        }
+
+        function filterEvents(events) {
+            const now = new Date(); now.setHours(0, 0, 0, 0);
+            const ts = e => { const d = new Date(e.date); d.setHours(0, 0, 0, 0); return d.getTime(); };
+            if (activeFilter === 'overdue') return events.filter(e => ts(e) < now.getTime());
+            if (activeFilter === 'today') return events.filter(e => ts(e) === now.getTime());
+            if (activeFilter === 'soon') return events.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 3; });
+            if (activeFilter === 'upcoming') return events.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 14; });
+            if (activeFilter === 'later') return events.filter(e => Math.round((ts(e) - now.getTime()) / 86400000) > 14);
+            return events;
+        }
+
+        function countBy(cls) {
+            const now = new Date(); now.setHours(0, 0, 0, 0);
+            const ts = e => { const d = new Date(e.date); d.setHours(0, 0, 0, 0); return d.getTime(); };
+            if (cls === 'all') return allEvents.length;
+            if (cls === 'overdue') return allEvents.filter(e => ts(e) < now.getTime()).length;
+            if (cls === 'today') return allEvents.filter(e => ts(e) === now.getTime()).length;
+            if (cls === 'soon') return allEvents.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 3; }).length;
+            if (cls === 'upcoming') return allEvents.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 14; }).length;
+            if (cls === 'later') return allEvents.filter(e => Math.round((ts(e) - now.getTime()) / 86400000) > 14).length;
+            return 0;
+        }
+
+        function renderAll() {
+            renderStats();
+            renderFilters();
+            renderLegend();
+            renderTimeline();
+        }
+
+        function renderStats() {
+            const now = new Date(); now.setHours(0, 0, 0, 0);
+            const ts = e => { const d = new Date(e.date); d.setHours(0, 0, 0, 0); return d.getTime(); };
+            const ov = allEvents.filter(e => ts(e) < now.getTime()).length;
+            const td = allEvents.filter(e => ts(e) === now.getTime()).length;
+            const sw = allEvents.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 7; }).length;
+
+            const el = document.getElementById('stats');
+            el.style.display = 'grid';
+            el.innerHTML = `
+    <div class="stat"><div class="stat-label">Total events</div><div class="stat-value">${allEvents.length}</div></div>
+    <div class="stat"><div class="stat-label">Overdue</div><div class="stat-value red">${ov}</div></div>
+    <div class="stat"><div class="stat-label">Due today</div><div class="stat-value amber">${td}</div></div>
+    <div class="stat"><div class="stat-label">This week</div><div class="stat-value green">${sw}</div></div>
+  `;
+        }
+
+        function renderFilters() {
+            const filters = [
+                { key: 'all', label: 'All deadlines' },
+                { key: 'overdue', label: 'Overdue' },
+                { key: 'today', label: 'Due today' },
+                { key: 'soon', label: 'Next 3 days' },
+                { key: 'upcoming', label: 'Next 2 weeks' },
+                { key: 'later', label: 'Later' },
+            ];
+            document.getElementById('filter-list').innerHTML = filters.map(f => `
+    <button class="filter-btn ${activeFilter === f.key ? 'active' : ''}" onclick="setFilter('${f.key}')">
+      ${f.label}
+      <span class="filter-count">${countBy(f.key)}</span>
+    </button>
+  `).join('');
+        }
+
+        function renderLegend() {
+            const sec = document.getElementById('legend-section');
+            if (!calMeta.length) { sec.style.display = 'none'; return; }
+            sec.style.display = 'block';
+            document.getElementById('cal-legend').innerHTML = calMeta.map(c => `
+    <div class="cal-legend-item">
+      <span style="width:10px;height:10px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block"></span>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.name)}</span>
+    </div>
+  `).join('');
+        }
+
+        function renderTimeline() {
+            const events = filterEvents(allEvents);
+            const content = document.getElementById('content');
+
+            if (!events.length) {
+                content.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">Nothing here</div>
+      <div class="empty-sub">No deadlines match this filter.</div>
+    </div>`;
+                return;
+            }
+
+            const grouped = {};
+            events.forEach(e => {
+                const d = new Date(e.date); d.setHours(0, 0, 0, 0);
+                const k = d.toISOString().slice(0, 10);
+                (grouped[k] = grouped[k] || []).push(e);
+            });
+
+            const fmt = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+
+            let html = '';
+            Object.keys(grouped).sort().forEach(key => {
+                const day = new Date(key + 'T12:00:00');
+                const isToday = day.toDateString() === today.toDateString();
+                const isPast = day < today;
+
+                html += `<div class="day-group"><div class="day-label">
+      ${isPast && !isToday ? '<span style="color:var(--red)">⚑</span>' : ''}
+      ${fmt.format(day)}
+      ${isToday ? '<span class="day-today-pill">today</span>' : ''}
+    </div>`;
+
+                grouped[key].forEach(e => {
+                    const u = urgency(e.date);
+                    html += `<div class="event-card">
+        <div class="urgency-bar bar-${u.cls}"></div>
+        <div class="event-body">
+          <div class="event-title">${esc(e.summary)}</div>
+          <div class="event-meta">
+            <span class="badge badge-${u.cls}">${u.label}</span>
+            <span class="cal-chip" style="color:${e.color};border-color:${e.color}40">${esc(e.calName)}</span>
+            ${e.timeStr ? `<span class="event-time">${e.timeStr}</span>` : ''}
+          </div>
+          ${e.description ? `<div class="event-desc">${esc(e.description)}</div>` : ''}
+          ${e.location ? `<div class="event-location">📍 ${esc(e.location)}</div>` : ''}
+        </div>
+      </div>`;
+                });
+
+                html += '</div>';
+            });
+
+            content.innerHTML = html;
+        }
+
+        function setFilter(f) { activeFilter = f; renderFilters(); renderTimeline(); }
+
+        function setStatus(html, isErr = false) {
+            document.getElementById('load-status').innerHTML = isErr
+                ? `<div class="status-err">${html}</div>`
+                : `<div class="status-bar">${html}</div>`;
+        }
+
+        function esc(s) {
+            if (!s) return '';
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+
+</html>

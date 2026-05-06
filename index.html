@@ -610,6 +610,190 @@
             animation-delay: 0.10s;
         }
 
+        /* View tabs */
+        .view-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 1.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .view-tab {
+            padding: 7px 16px;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            background: none;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-2);
+            cursor: pointer;
+            transition: color 0.15s;
+        }
+
+        .view-tab:hover { color: var(--text); }
+
+        .view-tab.active {
+            color: var(--text);
+            font-weight: 500;
+            border-bottom-color: var(--accent);
+        }
+
+        /* Semester grid */
+        .sem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 1.75rem 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sem-month-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: 15px;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .sem-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 3px;
+        }
+
+        .sem-wd {
+            font-size: 9px;
+            text-align: center;
+            color: var(--text-3);
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            padding: 2px 0;
+        }
+
+        .sem-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+
+        .sem-day {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 2px;
+            font-size: 10px;
+            color: var(--text-3);
+            transition: background 0.1s;
+        }
+
+        .sem-day.has-events { cursor: pointer; color: var(--text); }
+        .sem-day.has-events:hover { background: var(--surface2); }
+        .sem-day.is-today { background: var(--accent-light); color: var(--accent); font-weight: 700; }
+        .sem-day.is-overdue { background: var(--red-bg); }
+        .sem-day.is-selected { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+        .sem-day-num { line-height: 1; }
+
+        .sem-dots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1px;
+            justify-content: center;
+            padding: 1px 1px 0;
+            max-width: 100%;
+        }
+
+        .sem-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+
+        /* Day modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1.5rem;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 1.5rem 1rem;
+            max-width: 480px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-3);
+            font-size: 15px;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.1s, color 0.1s;
+        }
+
+        .modal-close:hover { background: var(--surface2); color: var(--text); }
+
+        .modal-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: 18px;
+            color: var(--text);
+            margin-bottom: 1rem;
+            padding-right: 2rem;
+        }
+
+        /* Year navigation */
+        .year-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface2);
+            border-radius: var(--radius);
+            padding: 3px;
+        }
+
+        .year-nav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-2);
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.1s, color 0.1s;
+        }
+
+        .year-nav-btn:hover { background: var(--surface); color: var(--text); }
+
+        .year-nav-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+        }
+
         @media (max-width: 800px) {
             .shell {
                 flex-direction: column;
@@ -658,6 +842,15 @@
                 <div class="filter-list" id="filter-list"></div>
             </div>
 
+            <div class="sidebar-section" id="year-nav-section" style="display:none">
+                <div class="sidebar-section-label">Academic year</div>
+                <div class="year-nav">
+                    <button class="year-nav-btn" onclick="shiftYear(-1)" title="Previous year">←</button>
+                    <span class="year-nav-label" id="year-nav-label"></span>
+                    <button class="year-nav-btn" onclick="shiftYear(1)" title="Next year">→</button>
+                </div>
+            </div>
+
             <div class="sidebar-section" id="legend-section" style="display:none">
                 <div class="sidebar-section-label">Calendars</div>
                 <div class="cal-legend" id="cal-legend"></div>
@@ -670,17 +863,27 @@
 
         <!-- Main -->
         <main class="main" role="main">
-            <div class="page-title">Your <em>upcoming</em><br />deadlines</div>
+            <div class="page-title">Our <em>upcoming</em><br />IO deadlines</div>
             <div class="page-date" id="page-date"></div>
 
-            <div class="stats" id="stats" style="display:none"></div>
+            <div class="view-tabs" id="view-tabs" style="display:none">
+                <button class="view-tab active" id="tab-semester" onclick="setView('semester')">Semester</button>
+                <button class="view-tab" id="tab-timeline" onclick="setView('timeline')">Timeline</button>
+            </div>
 
-            <div id="content">
-                <div class="empty-state">
-                    <div class="empty-icon">🗓</div>
-                    <div class="empty-title">No calendars loaded yet</div>
-                    <div class="empty-sub">Add ICS feed URLs in the sidebar and click "Load calendars"</div>
+            <div id="timeline-view" style="display:none">
+                <div class="stats" id="stats" style="display:none"></div>
+                <div id="content">
+                    <div class="empty-state">
+                        <div class="empty-icon">🗓</div>
+                        <div class="empty-title">No calendars loaded yet</div>
+                        <div class="empty-sub">Add ICS feed URLs in the sidebar and click "Load calendars"</div>
+                    </div>
                 </div>
+            </div>
+
+            <div id="semester-view">
+                <div id="semester-grid"></div>
             </div>
         </main>
     </div>
@@ -695,6 +898,20 @@
         let calMeta = [];
         let activeFilter = 'all';
         let colorIdx = 0;
+        let currentView = 'semester';
+        let yearOffset = 0;
+
+        function getAcademicYear() {
+            const now = new Date(), m = now.getMonth() + 1;
+            return (m >= 8 ? now.getFullYear() : now.getFullYear() - 1) + yearOffset;
+        }
+
+        function eventsInYear() {
+            const y = getAcademicYear();
+            const start = new Date(y, 8, 1);
+            const end = new Date(y + 1, 7, 31, 23, 59, 59);
+            return allEvents.filter(e => { const d = new Date(e.date); return d >= start && d <= end; });
+        }
 
         // ── Init ──────────────────────────────────────────────────────────────────
         document.getElementById('page-date').textContent = new Date().toLocaleDateString('en-GB', {
@@ -818,35 +1035,51 @@
         }
 
         function countBy(cls) {
+            const pool = eventsInYear();
             const now = new Date(); now.setHours(0, 0, 0, 0);
             const ts = e => { const d = new Date(e.date); d.setHours(0, 0, 0, 0); return d.getTime(); };
-            if (cls === 'all') return allEvents.length;
-            if (cls === 'overdue') return allEvents.filter(e => ts(e) < now.getTime()).length;
-            if (cls === 'today') return allEvents.filter(e => ts(e) === now.getTime()).length;
-            if (cls === 'soon') return allEvents.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 3; }).length;
-            if (cls === 'upcoming') return allEvents.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 14; }).length;
-            if (cls === 'later') return allEvents.filter(e => Math.round((ts(e) - now.getTime()) / 86400000) > 14).length;
+            if (cls === 'all') return pool.length;
+            if (cls === 'overdue') return pool.filter(e => ts(e) < now.getTime()).length;
+            if (cls === 'today') return pool.filter(e => ts(e) === now.getTime()).length;
+            if (cls === 'soon') return pool.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 3; }).length;
+            if (cls === 'upcoming') return pool.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 14; }).length;
+            if (cls === 'later') return pool.filter(e => Math.round((ts(e) - now.getTime()) / 86400000) > 14).length;
             return 0;
         }
 
         function renderAll() {
+            document.getElementById('view-tabs').style.display = 'flex';
+            renderYearNav();
             renderStats();
             renderFilters();
             renderLegend();
-            renderTimeline();
+            if (currentView === 'timeline') renderTimeline();
+            else renderSemester();
+        }
+
+        function renderYearNav() {
+            const y = getAcademicYear();
+            document.getElementById('year-nav-label').textContent = `${y}–${String(y + 1).slice(2)}`;
+            document.getElementById('year-nav-section').style.display = '';
+        }
+
+        function shiftYear(delta) {
+            yearOffset += delta;
+            renderAll();
         }
 
         function renderStats() {
+            const pool = eventsInYear();
             const now = new Date(); now.setHours(0, 0, 0, 0);
             const ts = e => { const d = new Date(e.date); d.setHours(0, 0, 0, 0); return d.getTime(); };
-            const ov = allEvents.filter(e => ts(e) < now.getTime()).length;
-            const td = allEvents.filter(e => ts(e) === now.getTime()).length;
-            const sw = allEvents.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 7; }).length;
+            const ov = pool.filter(e => ts(e) < now.getTime()).length;
+            const td = pool.filter(e => ts(e) === now.getTime()).length;
+            const sw = pool.filter(e => { const d = Math.round((ts(e) - now.getTime()) / 86400000); return d > 0 && d <= 7; }).length;
 
             const el = document.getElementById('stats');
             el.style.display = 'grid';
             el.innerHTML = `
-    <div class="stat"><div class="stat-label">Total events</div><div class="stat-value">${allEvents.length}</div></div>
+    <div class="stat"><div class="stat-label">This year</div><div class="stat-value">${pool.length}</div></div>
     <div class="stat"><div class="stat-label">Overdue</div><div class="stat-value red">${ov}</div></div>
     <div class="stat"><div class="stat-label">Due today</div><div class="stat-value amber">${td}</div></div>
     <div class="stat"><div class="stat-label">This week</div><div class="stat-value green">${sw}</div></div>
@@ -883,7 +1116,7 @@
         }
 
         function renderTimeline() {
-            const events = filterEvents(allEvents);
+            const events = filterEvents(eventsInYear());
             const content = document.getElementById('content');
 
             if (!events.length) {
@@ -940,6 +1173,122 @@
             content.innerHTML = html;
         }
 
+        function setView(v) {
+            currentView = v;
+            document.getElementById('timeline-view').style.display = v === 'timeline' ? '' : 'none';
+            document.getElementById('semester-view').style.display = v === 'semester' ? '' : 'none';
+            document.getElementById('tab-timeline').classList.toggle('active', v === 'timeline');
+            document.getElementById('tab-semester').classList.toggle('active', v === 'semester');
+            if (v === 'semester') renderSemester();
+            else renderTimeline();
+        }
+
+        function buildEventsByDay(events = allEvents) {
+            const map = {};
+            events.forEach(e => {
+                const d = new Date(e.date); d.setHours(0, 0, 0, 0);
+                const k = d.toISOString().slice(0, 10);
+                (map[k] = map[k] || []).push(e);
+            });
+            return map;
+        }
+
+        function renderSemester() {
+            const byDay = buildEventsByDay(filterEvents(eventsInYear()));
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+
+            const semYear = getAcademicYear();
+            const start = new Date(semYear, 8, 1);       // Sep 1
+            const end = new Date(semYear + 1, 5, 30);    // Jun 30
+
+            let html = '<div class="sem-grid">';
+            const cur = new Date(start.getFullYear(), start.getMonth(), 1);
+            while (cur <= end) {
+                html += renderSemMonth(new Date(cur), byDay, today);
+                cur.setMonth(cur.getMonth() + 1);
+            }
+            html += '</div>';
+            document.getElementById('semester-grid').innerHTML = html;
+        }
+
+        function renderSemMonth(monthStart, byDay, today) {
+            const y = monthStart.getFullYear(), mo = monthStart.getMonth();
+            const title = monthStart.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+            let startDow = new Date(y, mo, 1).getDay();
+            startDow = (startDow + 6) % 7; // Mon=0
+            const daysInMonth = new Date(y, mo + 1, 0).getDate();
+
+            let html = `<div class="sem-month">
+                <div class="sem-month-title">${title}</div>
+                <div class="sem-weekdays">${['M','T','W','T','F','S','S'].map(d => `<div class="sem-wd">${d}</div>`).join('')}</div>
+                <div class="sem-days">`;
+
+            for (let i = 0; i < startDow; i++) html += '<div></div>';
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(y, mo, day);
+                const key = `${y}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const events = byDay[key] || [];
+                const isToday = date.getTime() === today.getTime();
+                const isPast = date < today && !isToday;
+                const hasEvents = events.length > 0;
+
+                let cls = 'sem-day';
+                if (isToday) cls += ' is-today';
+                else if (isPast) cls += ' is-past';
+                if (hasEvents) cls += ' has-events';
+                if (isPast && hasEvents) cls += ' is-overdue';
+
+                const dots = events.slice(0, 6).map(e =>
+                    `<span class="sem-dot" style="background:${e.color}"></span>`
+                ).join('');
+
+                const onclick = hasEvents ? `onclick="showDay('${key}')"` : '';
+                html += `<div class="${cls}" ${onclick} data-date="${key}">
+                    <span class="sem-day-num">${day}</span>
+                    ${dots ? `<div class="sem-dots">${dots}</div>` : ''}
+                </div>`;
+            }
+
+            html += '</div></div>';
+            return html;
+        }
+
+        function showDay(key) {
+            const events = buildEventsByDay()[key] || [];
+            if (!events.length) return;
+
+            const date = new Date(key + 'T12:00:00');
+            const title = date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+            document.getElementById('modal-content').innerHTML =
+                `<div class="modal-title">${title}</div>` +
+                events.map(e => {
+                    const u = urgency(e.date);
+                    return `<div class="event-card" style="animation:none;margin-bottom:6px">
+                        <div class="urgency-bar bar-${u.cls}"></div>
+                        <div class="event-body">
+                            <div class="event-title">${esc(e.summary)}</div>
+                            <div class="event-meta">
+                                <span class="badge badge-${u.cls}">${u.label}</span>
+                                <span class="cal-chip" style="color:${e.color};border-color:${e.color}40">${esc(e.calName)}</span>
+                                ${e.timeStr ? `<span class="event-time">${e.timeStr}</span>` : ''}
+                            </div>
+                            ${e.description ? `<div class="event-desc">${esc(e.description)}</div>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+
+            document.getElementById('day-modal').style.display = 'flex';
+            document.querySelectorAll('.sem-day').forEach(d => d.classList.remove('is-selected'));
+            document.querySelector(`.sem-day[data-date="${key}"]`)?.classList.add('is-selected');
+        }
+
+        function closeDayModal() {
+            document.getElementById('day-modal').style.display = 'none';
+            document.querySelectorAll('.sem-day').forEach(d => d.classList.remove('is-selected'));
+        }
+
         function setFilter(f) { activeFilter = f; renderFilters(); renderTimeline(); }
 
         function setStatus(html, isErr = false) {
@@ -952,7 +1301,15 @@
             if (!s) return '';
             return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDayModal(); });
     </script>
+
+    <div id="day-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeDayModal()">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeDayModal()">✕</button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
 </body>
 
 </html>

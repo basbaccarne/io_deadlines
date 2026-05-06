@@ -5,6 +5,8 @@ dashboard for deadlines of io courses
 
 A local Node.js dashboard that fetches, parses, and combines ICS calendar feeds into a deadline overview.
 
+<img src="img.png" alt="ICS Deadline Dashboard Screenshot" width="600">
+
 ## Setup
 
 ```bash

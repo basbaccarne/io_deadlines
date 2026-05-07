@@ -1,6 +1,26 @@
 [
   {
-    "url": "https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?token=aqem71brpub9lfmj3960c",
+    "url": "https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1218135&token=aqem71brpub9lfmj3960c",
     "color": "#1a3a6b"
+  },
+  {
+    "url": "https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1290965&token=aqem71brpub9lfmj3960c",
+    "color": "#7a2a2a"
+  },
+  {
+    "url": "https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1218131&token=aqem71brpub9lfmj3960c",
+    "color": "#4a1a6b"
+  },
+  {
+    "url": "https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1224701&token=aqem71brpub9lfmj3960c",
+    "color": "#6b4a1a"
+  },
+  {
+    "url": "https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1205551&token=aqem71brpub9lfmj3960c",
+    "color": "#1a5a6b"
+  },
+  {
+    "url": "https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1226951&token=aqem71brpub9lfmj3960c",
+    "color": "#6b1a4a"
   }
 ]

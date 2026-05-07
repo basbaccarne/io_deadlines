@@ -1,9 +1,9 @@
-# io_deadlines
-dashboard for deadlines of io courses
-
-# ICS Deadline Dashboard
+# IO Deadline Dashboard
+Dashboard for deadlines of io courses based on Ufora ICS calendar feeds.
 
 A local Node.js dashboard that fetches, parses, and combines ICS calendar feeds into a deadline overview.
+
+🌐 Brower version: [Render Cloud Build](https://io-deadlines.onrender.com/)
 
 <img src="img.png" alt="ICS Deadline Dashboard Screenshot" width="600">
 

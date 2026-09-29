@@ -189,6 +189,39 @@
             background: var(--surface2);
         }
 
+        .preset-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .preset-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            font-family: 'DM Sans', sans-serif;
+            background: none;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--text-2);
+            transition: background 0.1s, color 0.1s;
+        }
+
+        .preset-btn:hover:not(:disabled) {
+            background: var(--surface2);
+        }
+
+        .preset-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .preset-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         .btn-load {
             width: 100%;
             padding: 9px 14px;
@@ -826,10 +859,15 @@
                 <div class="sidebar-sub">ICS Calendar Aggregator</div>
             </div>
 
+            <div class="sidebar-section" id="preset-section" style="display:none">
+                <div class="sidebar-section-label">Programme year</div>
+                <div class="preset-list" id="preset-list"></div>
+            </div>
+
             <div class="sidebar-section">
                 <div class="sidebar-section-label">Calendar feeds</div>
                 <div id="url-list"></div>
-                <button class="btn-add-cal" onclick="addRow()">+ add calendar</button>
+                <button class="btn-add-cal" onclick="switchToCustom(); addRow()">+ add calendar</button>
             </div>
 
             <div class="sidebar-section">
@@ -900,6 +938,8 @@
         let colorIdx = 0;
         let currentView = 'semester';
         let yearOffset = 0;
+        let presets = [];
+        let activePreset = null;
 
         function getAcademicYear() {
             const now = new Date(), m = now.getMonth() + 1;
@@ -919,16 +959,69 @@
         });
 
         (async () => {
+            presets = await fetch('/api/presets').then(r => r.json()).catch(() => []);
+            renderPresets();
+            renderFilters();
+            document.getElementById('url-list').addEventListener('input', switchToCustom);
+
+            const requested = new URLSearchParams(location.search).get('set');
+            const preset = presets.find(p => p.name === requested && p.urls.length);
+            if (preset) selectPreset(preset.name);
+            else await restoreCustom();
+        })();
+
+        // ── Presets ───────────────────────────────────────────────────────────────
+        async function restoreCustom() {
             const saved = await fetch('/api/calendars').then(r => r.json()).catch(() => []);
+            clearRows();
             if (saved.length) {
                 saved.forEach(c => addRow(c.url));
             } else {
                 addRow('https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?token=agz66z27vv9iv7s810e9b');
             }
-            renderFilters();
-        })();
+        }
+
+        function renderPresets() {
+            document.getElementById('preset-section').style.display = presets.length ? '' : 'none';
+            const btn = (label, onclick, active, disabled, title = '') =>
+                `<button class="preset-btn ${active ? 'active' : ''}" onclick="${onclick}" ${disabled ? 'disabled' : ''} title="${esc(title)}">${esc(label)}</button>`;
+            document.getElementById('preset-list').innerHTML =
+                presets.map(p => btn(p.name, `selectPreset('${esc(p.name)}')`, activePreset === p.name,
+                    !p.urls.length, p.urls.length ? `${p.urls.length} calendar(s)` : 'No calendars configured')).join('') +
+                btn('Custom', 'selectCustom()', activePreset === null, false, 'Your own list of feeds');
+        }
+
+        function selectPreset(name) {
+            const preset = presets.find(p => p.name === name);
+            if (!preset || !preset.urls.length) return;
+            activePreset = name;
+            clearRows();
+            preset.urls.forEach(u => addRow(u));
+            history.replaceState(null, '', '?set=' + encodeURIComponent(name));
+            renderPresets();
+            loadAll();
+        }
+
+        async function selectCustom() {
+            if (activePreset === null) return;
+            switchToCustom();
+            await restoreCustom();
+        }
+
+        // Editing the feed list turns a preset into a custom list
+        function switchToCustom() {
+            if (activePreset === null) return;
+            activePreset = null;
+            history.replaceState(null, '', location.pathname);
+            renderPresets();
+        }
 
         // ── URL management ────────────────────────────────────────────────────────
+        function clearRows() {
+            document.getElementById('url-list').innerHTML = '';
+            colorIdx = 0;
+        }
+
         function addRow(val = '') {
             const list = document.getElementById('url-list');
             const id = 'r' + Date.now() + Math.random();
@@ -947,6 +1040,7 @@
 
         function rmRow(id) {
             document.getElementById(id)?.remove();
+            switchToCustom();
         }
 
         function getCalInputs() {
@@ -967,7 +1061,8 @@
             document.getElementById('stats').style.display = 'none';
             setStatus('<span><span class="spinner">⟳</span> Fetching…</span>');
 
-            try {
+            // Only a custom list is persisted; presets live in presets.yaml
+            if (activePreset === null) try {
                 await fetch('/api/calendars', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

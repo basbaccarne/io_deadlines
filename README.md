@@ -23,6 +23,19 @@ Then open **http://localhost:3000** in your browser.
 2. Click **Load calendars**
 3. Your URLs are saved to `calendars.json` so they persist between sessions
 
+### Programme-year presets
+
+Fixed calendar sets (1IO – 4IO) are defined in `presets.yaml` and appear as buttons in the sidebar.
+Clicking one loads its feeds; editing the list switches back to **Custom**. You can link directly to a set with `?set=2IO`.
+
+```yaml
+1IO:
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=...&token=...
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=...&token=...
+2IO:
+  - https://...
+```
+
 ## Features
 
 - Fetches ICS feeds server-side (no CORS issues)

@@ -1,0 +1,25 @@
+# Fixed calendar sets, shown as buttons in the sidebar.
+# Format: a set name, followed by a list of ICS feed URLs (one per line, prefixed with "- ").
+# Colors are assigned automatically. Lines starting with # are ignored.
+
+1IO:
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=...&token=...
+
+2IO:
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1395219&token=agz66z27vv9iv7s810e9b
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1390950&token=agz66z27vv9iv7s810e9b
+
+3IO:
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1402155&token=ajf9dy6mybk60qrb3d579
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1390947&token=ajf9dy6mybk60qrb3d579
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1382692&token=ajf9dy6mybk60qrb3d579
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1403682&token=ajf9dy6mybk60qrb3d579
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?token=agz66z27vv9iv7s810e9b
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1405548&token=ajf9dy6mybk60qrb3d579
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1386876&token=ajf9dy6mybk60qrb3d579
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1399204&token=ajf9dy6mybk60qrb3d579
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1408004&token=ajf9dy6mybk60qrb3d579
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1399220&token=ajf9dy6mybk60qrb3d579
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1408018&token=ajf9dy6mybk60qrb3d579
+
+4IO:

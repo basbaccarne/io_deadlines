@@ -5,9 +5,31 @@ const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 const CALENDARS_FILE = path.join(__dirname, 'calendars.json');
+const PRESETS_FILE = path.join(__dirname, 'presets.yaml');
 
 function loadCalendars() {
   try { return JSON.parse(fs.readFileSync(CALENDARS_FILE, 'utf8')); } catch { return []; }
+}
+
+// Minimal parser for presets.yaml: top-level "name:" keys, each followed by "- url" items.
+function loadPresets() {
+  let text;
+  try { text = fs.readFileSync(PRESETS_FILE, 'utf8'); } catch { return []; }
+  const presets = [];
+  let current = null;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.replace(/\s+#.*$/, '').trimEnd();
+    if (!line.trim() || line.trim().startsWith('#')) continue;
+    const key = line.match(/^(\S[^:]*):\s*$/);
+    const item = line.match(/^\s*-\s+(.+)$/);
+    if (key) {
+      current = { name: key[1].trim().replace(/^["']|["']$/g, ''), urls: [] };
+      presets.push(current);
+    } else if (item && current) {
+      current.urls.push(item[1].trim().replace(/^["']|["']$/g, ''));
+    }
+  }
+  return presets;
 }
 
 function saveCalendars(cals) {
@@ -42,6 +64,9 @@ http.createServer(async (req, res) => {
   try {
     if (pathname === '/api/calendars' && req.method === 'GET') {
       return json(res, 200, loadCalendars());
+    }
+    if (pathname === '/api/presets' && req.method === 'GET') {
+      return json(res, 200, loadPresets());
     }
     if (pathname === '/api/calendars' && req.method === 'POST') {
       const { calendars } = await readBody(req);

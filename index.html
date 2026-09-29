@@ -735,10 +735,55 @@
             gap: 1px;
             justify-content: center;
             padding: 1px 1px 0;
+            align-items: center;
             max-width: 100%;
         }
 
         .sem-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+
+        /* Student effort estimates */
+        .effort {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border);
+            font-size: 11px;
+            color: var(--text-2);
+        }
+
+        .effort-q { margin-bottom: 4px; }
+
+        .effort-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .effort-btn {
+            padding: 2px 8px;
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            background: none;
+            border: 1px solid var(--border-strong);
+            border-radius: 10px;
+            color: var(--text-2);
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .effort-btn:hover { background: var(--surface2); }
+
+        .effort-btn.mine {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .effort-stats {
+            margin-top: 5px;
+            color: var(--text-3);
+        }
+
+        .effort-stats strong { color: var(--text); font-weight: 500; }
 
         /* Day modal */
         .modal-overlay {
@@ -940,6 +985,25 @@
         let yearOffset = 0;
         let presets = [];
         let activePreset = null;
+        let efforts = {}; // taskId → { before: { counts, mine }, after: { counts, mine } }
+
+        // Hour ranges students can pick; `mid` is used to compute an average
+        const EFFORT_BUCKETS = [
+            { label: '<1h', mid: 0.5 },
+            { label: '1–3h', mid: 2 },
+            { label: '3–8h', mid: 5.5 },
+            { label: '8–20h', mid: 14 },
+            { label: '20h+', mid: 25 },
+        ];
+
+        // Anonymous per-browser id, so a student can change their own answer
+        const voterId = (() => {
+            try {
+                let id = localStorage.getItem('io-voter-id');
+                if (!id) { id = crypto.randomUUID(); localStorage.setItem('io-voter-id', id); }
+                return id;
+            } catch { return crypto.randomUUID(); }
+        })();
 
         function getAcademicYear() {
             const now = new Date(), m = now.getMonth() + 1;
@@ -1098,6 +1162,7 @@
                 }
 
                 activeFilter = 'all';
+                await loadEfforts();
                 renderAll();
             } catch (e) {
                 setStatus('Server error: ' + e.message, true);
@@ -1258,6 +1323,7 @@
           </div>
           ${e.description ? `<div class="event-desc">${esc(e.description)}</div>` : ''}
           ${e.location ? `<div class="event-location">📍 ${esc(e.location)}</div>` : ''}
+          ${effortBlock(e)}
         </div>
       </div>`;
                 });
@@ -1334,9 +1400,12 @@
                 if (hasEvents) cls += ' has-events';
                 if (isPast && hasEvents) cls += ' is-overdue';
 
-                const dots = events.slice(0, 6).map(e =>
-                    `<span class="sem-dot" style="background:${e.color}"></span>`
-                ).join('');
+                // One dot per course; the dot grows with the number of items for that course
+                const dots = groupByCourse(events).slice(0, 6).map(g => {
+                    const size = Math.min(4 + 2 * (g.events.length - 1), 10);
+                    const tip = `${g.calName}: ${g.events.length} item${g.events.length > 1 ? 's' : ''}`;
+                    return `<span class="sem-dot" style="background:${g.color};width:${size}px;height:${size}px" title="${esc(tip)}"></span>`;
+                }).join('');
 
                 const onclick = hasEvents ? `onclick="showDay('${key}')"` : '';
                 html += `<div class="${cls}" ${onclick} data-date="${key}">
@@ -1349,6 +1418,84 @@
             return html;
         }
 
+        // ── Student effort estimates ──────────────────────────────────────────────
+        async function loadEfforts() {
+            efforts = await fetch('/api/estimates?voter=' + encodeURIComponent(voterId))
+                .then(r => r.json()).catch(() => ({}));
+        }
+
+        function effortPhase(e) {
+            return new Date(e.endDate || e.date) < new Date() ? 'after' : 'before';
+        }
+
+        function effortStat(ph) {
+            const n = ph ? ph.counts.reduce((a, b) => a + b, 0) : 0;
+            if (!n) return null;
+            const avg = ph.counts.reduce((sum, c, i) => sum + c * EFFORT_BUCKETS[i].mid, 0) / n;
+            return { n, hours: avg < 1 ? '<1h' : `~${Math.round(avg)}h` };
+        }
+
+        function effortBlock(e) {
+            const phase = effortPhase(e);
+            const data = efforts[e.id] || {};
+            const mine = data[phase]?.mine ?? null;
+            const question = phase === 'after' ? 'How long did this take you?' : 'How long do you expect this to take?';
+            const stats = [['before', 'expected'], ['after', 'took']]
+                .map(([p, verb]) => { const s = effortStat(data[p]); return s && `students ${verb} <strong>${s.hours}</strong> (${s.n})`; })
+                .filter(Boolean).join(' · ');
+            return `<div class="effort" data-task="${esc(e.id)}" data-phase="${phase}">
+                <div class="effort-q">${question}</div>
+                <div class="effort-btns">${EFFORT_BUCKETS.map((b, i) =>
+                    `<button class="effort-btn ${mine === i ? 'mine' : ''}" data-bucket="${i}">${b.label}</button>`).join('')}</div>
+                ${stats ? `<div class="effort-stats">${stats}</div>` : ''}
+            </div>`;
+        }
+
+        document.addEventListener('click', async ev => {
+            const btn = ev.target.closest('.effort-btn');
+            if (!btn) return;
+            const block = btn.closest('.effort');
+            const taskId = block.dataset.task, phase = block.dataset.phase;
+            const picked = +btn.dataset.bucket;
+
+            // Clicking your current answer again removes it
+            const ph = ((efforts[taskId] ||= {})[phase] ||= { counts: EFFORT_BUCKETS.map(() => 0), mine: null });
+            const prev = ph.mine;
+            const bucket = prev === picked ? null : picked;
+            if (prev !== null) ph.counts[prev]--;
+            if (bucket !== null) ph.counts[bucket]++;
+            ph.mine = bucket;
+            refreshEffortBlocks(taskId);
+
+            try {
+                const res = await fetch('/api/estimates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId, voterId, phase, bucket })
+                });
+                if (!res.ok) throw new Error();
+            } catch {
+                await loadEfforts(); // roll back to what the server has
+                refreshEffortBlocks(taskId);
+            }
+        });
+
+        function refreshEffortBlocks(taskId) {
+            const e = allEvents.find(x => x.id === taskId);
+            if (!e) return;
+            document.querySelectorAll(`.effort[data-task="${CSS.escape(taskId)}"]`)
+                .forEach(el => { el.outerHTML = effortBlock(e); });
+        }
+
+        function groupByCourse(events) {
+            const groups = new Map();
+            events.forEach(e => {
+                if (!groups.has(e.calName)) groups.set(e.calName, { calName: e.calName, color: e.color, events: [] });
+                groups.get(e.calName).events.push(e);
+            });
+            return [...groups.values()];
+        }
+
         function showDay(key) {
             const events = buildEventsByDay()[key] || [];
             if (!events.length) return;
@@ -1358,7 +1505,7 @@
 
             document.getElementById('modal-content').innerHTML =
                 `<div class="modal-title">${title}</div>` +
-                events.map(e => {
+                groupByCourse(events).flatMap(g => g.events).map(e => {
                     const u = urgency(e.date);
                     return `<div class="event-card" style="animation:none;margin-bottom:6px">
                         <div class="urgency-bar bar-${u.cls}"></div>
@@ -1370,6 +1517,7 @@
                                 ${e.timeStr ? `<span class="event-time">${e.timeStr}</span>` : ''}
                             </div>
                             ${e.description ? `<div class="event-desc">${esc(e.description)}</div>` : ''}
+                            ${effortBlock(e)}
                         </div>
                     </div>`;
                 }).join('');

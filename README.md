@@ -45,6 +45,14 @@ Clicking one loads its feeds; editing the list switches back to **Custom**. You 
 - Shows event time, description, and location when available
 - Persists your calendar URLs across restarts
 
+### Student effort estimates
+
+Every deadline shows hour-range buttons (<1h, 1–3h, 3–8h, 8–20h, 20h+). Before the deadline students give the time they expect it to take, afterwards the time it actually took; both averages are shown on the item. Answers are anonymous (a random id per browser), and clicking your answer again removes it.
+
+Answers are stored in Postgres when `DATABASE_URL` is set (e.g. a free Supabase or Neon database; the table is created automatically). Without it they go to a local `estimates.json`, which is fine for local testing but is wiped on every Render redeploy.
+
+On Render: *Environment → Add environment variable* → `DATABASE_URL` = the connection string of your database.
+
 ## Requirements
 
 - Node.js 16+

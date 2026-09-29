@@ -6,6 +6,84 @@ const path = require('path');
 const PORT = process.env.PORT || 3000;
 const CALENDARS_FILE = path.join(__dirname, 'calendars.json');
 const PRESETS_FILE = path.join(__dirname, 'presets.yaml');
+const ESTIMATES_FILE = path.join(__dirname, 'estimates.json');
+const PHASES = ['before', 'after'];
+const BUCKET_COUNT = 5; // <1h, 1–3h, 3–8h, 8–20h, 20h+ (labels live in index.html)
+
+// ── Effort estimates: Postgres when DATABASE_URL is set, else a local JSON file ──
+const estimates = process.env.DATABASE_URL ? pgStore(process.env.DATABASE_URL) : fileStore(ESTIMATES_FILE);
+
+function pgStore(connectionString) {
+  const { Pool } = require('pg');
+  const local = /@(localhost|127\.0\.0\.1)[:/]/.test(connectionString);
+  const pool = new Pool({ connectionString, ssl: local ? false : { rejectUnauthorized: false } });
+  const ready = pool.query(`CREATE TABLE IF NOT EXISTS effort_estimates (
+    task_id    TEXT NOT NULL,
+    voter_id   TEXT NOT NULL,
+    phase      TEXT NOT NULL CHECK (phase IN ('before', 'after')),
+    bucket     SMALLINT NOT NULL CHECK (bucket BETWEEN 0 AND ${BUCKET_COUNT - 1}),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (task_id, voter_id, phase)
+  )`);
+  return {
+    async save({ taskId, voterId, phase, bucket }) {
+      await ready;
+      if (bucket === null) {
+        await pool.query('DELETE FROM effort_estimates WHERE task_id=$1 AND voter_id=$2 AND phase=$3', [taskId, voterId, phase]);
+      } else {
+        await pool.query(`INSERT INTO effort_estimates (task_id, voter_id, phase, bucket) VALUES ($1, $2, $3, $4)
+          ON CONFLICT (task_id, voter_id, phase) DO UPDATE SET bucket = EXCLUDED.bucket, updated_at = now()`,
+          [taskId, voterId, phase, bucket]);
+      }
+    },
+    async summary(voterId) {
+      await ready;
+      const { rows } = await pool.query(`SELECT task_id, phase, bucket, count(*)::int AS n, bool_or(voter_id = $1) AS mine
+        FROM effort_estimates GROUP BY task_id, phase, bucket`, [voterId]);
+      return buildSummary(rows);
+    },
+  };
+}
+
+function fileStore(file) {
+  const load = () => { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return []; } };
+  return {
+    async save({ taskId, voterId, phase, bucket }) {
+      const rows = load().filter(r => !(r.taskId === taskId && r.voterId === voterId && r.phase === phase));
+      if (bucket !== null) rows.push({ taskId, voterId, phase, bucket });
+      fs.writeFileSync(file, JSON.stringify(rows));
+    },
+    async summary(voterId) {
+      const groups = new Map();
+      load().forEach(r => {
+        const k = JSON.stringify([r.taskId, r.phase, r.bucket]);
+        const g = groups.get(k) || { task_id: r.taskId, phase: r.phase, bucket: r.bucket, n: 0, mine: false };
+        g.n++; g.mine ||= r.voterId === voterId;
+        groups.set(k, g);
+      });
+      return buildSummary([...groups.values()]);
+    },
+  };
+}
+
+// → { taskId: { before: { counts: [..5], mine: bucket|null }, after: {...} } }
+function buildSummary(rows) {
+  const out = {};
+  rows.forEach(r => {
+    const task = out[r.task_id] ||= {};
+    const ph = task[r.phase] ||= { counts: Array(BUCKET_COUNT).fill(0), mine: null };
+    ph.counts[r.bucket] = r.n;
+    if (r.mine) ph.mine = r.bucket;
+  });
+  return out;
+}
+
+function validEstimate({ taskId, voterId, phase, bucket }) {
+  return typeof taskId === 'string' && taskId.length > 0 && taskId.length <= 500
+    && typeof voterId === 'string' && /^[\w-]{8,64}$/.test(voterId)
+    && PHASES.includes(phase)
+    && (bucket === null || (Number.isInteger(bucket) && bucket >= 0 && bucket < BUCKET_COUNT));
+}
 
 function loadCalendars() {
   try { return JSON.parse(fs.readFileSync(CALENDARS_FILE, 'utf8')); } catch { return []; }
@@ -67,6 +145,16 @@ http.createServer(async (req, res) => {
     }
     if (pathname === '/api/presets' && req.method === 'GET') {
       return json(res, 200, loadPresets());
+    }
+    if (pathname === '/api/estimates' && req.method === 'GET') {
+      const voterId = new URL(req.url, 'http://localhost').searchParams.get('voter') || '';
+      return json(res, 200, await estimates.summary(voterId));
+    }
+    if (pathname === '/api/estimates' && req.method === 'POST') {
+      const body = await readBody(req);
+      if (!validEstimate(body)) return json(res, 400, { error: 'Invalid estimate' });
+      await estimates.save(body);
+      return json(res, 200, { ok: true });
     }
     if (pathname === '/api/calendars' && req.method === 'POST') {
       const { calendars } = await readBody(req);
@@ -147,8 +235,12 @@ function parseICS(text, fallbackName) {
     const endDate = rawEnd ? parseICSDate(rawEnd) : null;
     const allDay = /^\d{8}$/.test(rawDate.replace(/^.*:/, '').trim());
 
+    const summary = get('SUMMARY') || '(no title)';
+    const uid = (block.match(/(?:^|\n)UID[^:]*:([^\r\n]+)/) || [])[1]?.trim();
+
     items.push({
-      summary: get('SUMMARY') || '(no title)',
+      id: uid || `${calName}|${summary}|${date.toISOString()}`,
+      summary,
       description: get('DESCRIPTION') || null,
       location: get('LOCATION') || null,
       date: date.toISOString(),

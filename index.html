@@ -1400,10 +1400,12 @@
                 if (hasEvents) cls += ' has-events';
                 if (isPast && hasEvents) cls += ' is-overdue';
 
-                // One dot per course; the dot grows with the number of items for that course
+                // One dot per course; the dot grows with the students' estimated workload for that day
                 const dots = groupByCourse(events).slice(0, 6).map(g => {
-                    const size = Math.min(4 + 2 * (g.events.length - 1), 10);
-                    const tip = `${g.calName}: ${g.events.length} item${g.events.length > 1 ? 's' : ''}`;
+                    const hours = g.events.reduce((sum, e) => sum + (effortHours(e) ?? 0), 0);
+                    const size = workloadDotSize(hours);
+                    const tip = `${g.calName}: ${g.events.length} item${g.events.length > 1 ? 's' : ''}`
+                        + (hours ? ` · ~${Math.max(1, Math.round(hours))}h workload` : ' · no workload estimate yet');
                     return `<span class="sem-dot" style="background:${g.color};width:${size}px;height:${size}px" title="${esc(tip)}"></span>`;
                 }).join('');
 
@@ -1432,7 +1434,18 @@
             const n = ph ? ph.counts.reduce((a, b) => a + b, 0) : 0;
             if (!n) return null;
             const avg = ph.counts.reduce((sum, c, i) => sum + c * EFFORT_BUCKETS[i].mid, 0) / n;
-            return { n, hours: avg < 1 ? '<1h' : `~${Math.round(avg)}h` };
+            return { n, avg, hours: avg < 1 ? '<1h' : `~${Math.round(avg)}h` };
+        }
+
+        // Best available workload for an item: actual time if reported, else expected time
+        function effortHours(e) {
+            const data = efforts[e.id] || {};
+            return (effortStat(data.after) || effortStat(data.before))?.avg ?? null;
+        }
+
+        // 4px without estimates, growing to 12px at 25h+ (square root, so small tasks stay distinguishable)
+        function workloadDotSize(hours) {
+            return hours ? Math.round(4 + 8 * Math.sqrt(Math.min(hours, 25) / 25)) : 4;
         }
 
         function effortBlock(e) {
@@ -1485,6 +1498,11 @@
             if (!e) return;
             document.querySelectorAll(`.effort[data-task="${CSS.escape(taskId)}"]`)
                 .forEach(el => { el.outerHTML = effortBlock(e); });
+            if (currentView === 'semester') {
+                const selected = document.querySelector('.sem-day.is-selected')?.dataset.date;
+                renderSemester();
+                if (selected) document.querySelector(`.sem-day[data-date="${selected}"]`)?.classList.add('is-selected');
+            }
         }
 
         function groupByCourse(events) {

@@ -710,6 +710,7 @@
 
         .sem-day {
             aspect-ratio: 1;
+            min-height: 0; /* large workload dots may overflow instead of stretching the row */
             border-radius: 4px;
             display: flex;
             flex-direction: column;
@@ -1443,9 +1444,9 @@
             return (effortStat(data.after) || effortStat(data.before))?.avg ?? null;
         }
 
-        // 4px without estimates, growing to 12px at 25h+ (square root, so small tasks stay distinguishable)
+        // 3px without estimates, growing to 18px at 25h+ (square root, so small tasks stay distinguishable)
         function workloadDotSize(hours) {
-            return hours ? Math.round(4 + 8 * Math.sqrt(Math.min(hours, 25) / 25)) : 4;
+            return hours ? Math.round(4 + 14 * Math.sqrt(Math.min(hours, 25) / 25)) : 3;
         }
 
         function effortBlock(e) {

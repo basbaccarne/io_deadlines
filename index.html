@@ -73,8 +73,11 @@
         .main {
             flex: 1;
             padding: 2.5rem 2.5rem 4rem;
-            max-width: 860px;
+            max-width: 1400px;
         }
+
+        /* The semester calendar uses the full width; the timeline stays readable */
+        #timeline-view { max-width: 860px; }
 
         /* Sidebar */
         .sidebar-header {
@@ -675,16 +678,16 @@
         /* Semester grid */
         .sem-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-            gap: 1.75rem 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem 2.5rem;
             margin-bottom: 1.5rem;
         }
 
         .sem-month-title {
             font-family: 'Instrument Serif', serif;
-            font-size: 15px;
+            font-size: 19px;
             color: var(--text);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .sem-weekdays {
@@ -694,7 +697,7 @@
         }
 
         .sem-wd {
-            font-size: 9px;
+            font-size: 10px;
             text-align: center;
             color: var(--text-3);
             font-weight: 500;
@@ -716,8 +719,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding-top: 2px;
-            font-size: 10px;
+            padding-top: 4px;
+            font-size: 12px;
             color: var(--text-3);
             transition: background 0.1s;
         }
@@ -733,9 +736,9 @@
         .sem-dots {
             display: flex;
             flex-wrap: wrap;
-            gap: 1px;
+            gap: 2px;
             justify-content: center;
-            padding: 1px 1px 0;
+            padding: 3px 1px 0;
             align-items: center;
             max-width: 100%;
         }
@@ -1444,9 +1447,9 @@
             return (effortStat(data.after) || effortStat(data.before))?.avg ?? null;
         }
 
-        // 3px without estimates, growing to 18px at 25h+ (square root, so small tasks stay distinguishable)
+        // 5px without estimates, growing to 24px at 25h+ (square root, so small tasks stay distinguishable)
         function workloadDotSize(hours) {
-            return hours ? Math.round(4 + 14 * Math.sqrt(Math.min(hours, 25) / 25)) : 3;
+            return hours ? Math.round(7 + 17 * Math.sqrt(Math.min(hours, 25) / 25)) : 5;
         }
 
         function effortBlock(e) {

@@ -17,17 +17,31 @@ function pgStore(connectionString) {
   const { Pool } = require('pg');
   const local = /@(localhost|127\.0\.0\.1)[:/]/.test(connectionString);
   const pool = new Pool({ connectionString, ssl: local ? false : { rejectUnauthorized: false } });
-  const ready = pool.query(`CREATE TABLE IF NOT EXISTS effort_estimates (
-    task_id    TEXT NOT NULL,
-    voter_id   TEXT NOT NULL,
-    phase      TEXT NOT NULL CHECK (phase IN ('before', 'after')),
-    bucket     SMALLINT NOT NULL CHECK (bucket BETWEEN 0 AND ${BUCKET_COUNT - 1}),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    PRIMARY KEY (task_id, voter_id, phase)
-  )`);
+  // Poolers such as Supabase's drop idle connections; without this handler that would crash the server
+  pool.on('error', err => console.error('Postgres pool error:', err.message));
+
+  // Create the table on first use; retry on the next request if the database was unreachable
+  let tableReady = null;
+  const ready = () => tableReady ||= pool.query(`
+    CREATE TABLE IF NOT EXISTS effort_estimates (
+      task_id    TEXT NOT NULL,
+      voter_id   TEXT NOT NULL,
+      phase      TEXT NOT NULL CHECK (phase IN ('before', 'after')),
+      bucket     SMALLINT NOT NULL CHECK (bucket BETWEEN 0 AND ${BUCKET_COUNT - 1}),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (task_id, voter_id, phase)
+    );
+    -- Supabase exposes public tables through its REST API; with RLS on and no policies only this server (the owner) can access it
+    ALTER TABLE effort_estimates ENABLE ROW LEVEL SECURITY;
+  `).catch(err => { tableReady = null; throw err; });
+
+  ready().then(
+    () => console.log('   Effort estimates: Postgres connected'),
+    err => console.error('   Effort estimates: Postgres unreachable:', err.message));
+
   return {
     async save({ taskId, voterId, phase, bucket }) {
-      await ready;
+      await ready();
       if (bucket === null) {
         await pool.query('DELETE FROM effort_estimates WHERE task_id=$1 AND voter_id=$2 AND phase=$3', [taskId, voterId, phase]);
       } else {
@@ -37,7 +51,7 @@ function pgStore(connectionString) {
       }
     },
     async summary(voterId) {
-      await ready;
+      await ready();
       const { rows } = await pool.query(`SELECT task_id, phase, bucket, count(*)::int AS n, bool_or(voter_id = $1) AS mine
         FROM effort_estimates GROUP BY task_id, phase, bucket`, [voterId]);
       return buildSummary(rows);
@@ -46,6 +60,7 @@ function pgStore(connectionString) {
 }
 
 function fileStore(file) {
+  console.log('   Effort estimates: local file (set DATABASE_URL to use Postgres)');
   const load = () => { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return []; } };
   return {
     async save({ taskId, voterId, phase, bucket }) {

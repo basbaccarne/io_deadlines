@@ -53,6 +53,17 @@ Answers are stored in Postgres when `DATABASE_URL` is set (e.g. a free Supabase 
 
 On Render: *Environment → Add environment variable* → `DATABASE_URL` = the connection string of your database.
 
+#### Supabase setup
+
+1. Create a project at [supabase.com](https://supabase.com) (region: *Central EU (Frankfurt)*), and note the database password.
+2. Click **Connect** (top of the project) → **Session pooler** and copy the URI:
+   `postgresql://postgres.<project-ref>:[YOUR-PASSWORD]@aws-0-eu-central-1.pooler.supabase.com:5432/postgres`
+   Use the *session pooler*, not the *direct connection*: the direct one is IPv6-only and Render can't reach it.
+3. Replace `[YOUR-PASSWORD]` with your password (URL-encode special characters, e.g. `@` → `%40`).
+4. Put the URI in `DATABASE_URL` on Render and deploy. The logs should show `Effort estimates: Postgres connected`; the `effort_estimates` table then appears in Supabase's *Table Editor*.
+
+Free Supabase projects pause after a week without activity; restore them from the dashboard.
+
 ## Requirements
 
 - Node.js 16+

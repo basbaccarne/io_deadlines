@@ -3,7 +3,8 @@
 # Colors are assigned automatically. Lines starting with # are ignored.
 
 1IO:
-  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=...&token=...
+  - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1396695&token=alq3c8rg6bmp6bd93d677
+  -
 
 2IO:
   - https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?feedOU=1395219&token=agz66z27vv9iv7s810e9b

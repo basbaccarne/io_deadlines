@@ -119,7 +119,8 @@ function loadPresets() {
       current = { name: key[1].trim().replace(/^["']|["']$/g, ''), urls: [] };
       presets.push(current);
     } else if (item && current) {
-      current.urls.push(item[1].trim().replace(/^["']|["']$/g, ''));
+      const url = item[1].trim().replace(/^["']|["']$/g, '');
+      if (!current.urls.includes(url)) current.urls.push(url); // skip duplicate links
     }
   }
   return presets;

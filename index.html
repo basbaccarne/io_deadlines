@@ -305,8 +305,52 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            width: 100%;
+            padding: 3px 6px;
+            margin: 0 -6px;
             font-size: 12px;
+            font-family: 'DM Sans', sans-serif;
             color: var(--text-2);
+            background: none;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.1s, opacity 0.1s;
+        }
+
+        .cal-legend-item:hover { background: var(--surface2); }
+
+        .cal-legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid;
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+
+        .cal-legend-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Hidden course: hollow dot, struck-through name */
+        .cal-legend-item.is-hidden { opacity: 0.5; }
+        .cal-legend-item.is-hidden .cal-legend-dot { background: none !important; }
+        .cal-legend-item.is-hidden .cal-legend-name { text-decoration: line-through; }
+
+        .cal-legend-all {
+            margin-top: 6px;
+            padding: 0;
+            font-size: 11px;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-3);
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
         }
 
         .sidebar-footer {
@@ -733,17 +777,23 @@
 
         .sem-day-num { line-height: 1; }
 
+        /* Dots share one fixed area below the day number and overlap instead of wrapping */
         .sem-dots {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2px;
-            justify-content: center;
-            padding: 3px 1px 0;
-            align-items: center;
-            max-width: 100%;
+            position: relative;
+            flex: 1;
+            width: 100%;
         }
 
-        .sem-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+        .sem-dot {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            opacity: 0.7;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6);
+        }
+
+        .sem-day:hover .sem-dot { opacity: 0.9; }
 
         /* Student effort estimates */
         .effort {
@@ -976,13 +1026,16 @@
     </div>
 
     <script>
+        // 14 clearly different hues, ordered so neighbouring courses contrast most
         const CAL_COLORS = [
-            '#2a6e3f', '#1a3a6b', '#7a2a2a', '#4a1a6b', '#6b4a1a',
-            '#1a5a6b', '#6b1a4a', '#2a4a6b'
+            '#2563eb', '#dc2626', '#16a34a', '#ea580c', '#9333ea', '#0891b2', '#db2777',
+            '#65a30d', '#92400e', '#1e3a8a', '#c026d3', '#0f766e', '#ca8a04', '#475569'
         ];
 
         let allEvents = [];
         let calMeta = [];
+        // Courses hidden via the legend, by feed URL; remembered per browser
+        let hiddenCals = new Set((() => { try { return JSON.parse(localStorage.getItem('io-hidden-cals')) || []; } catch { return []; } })());
         let activeFilter = 'all';
         let colorIdx = 0;
         let currentView = 'semester';
@@ -1018,7 +1071,26 @@
             const y = getAcademicYear();
             const start = new Date(y, 8, 1);
             const end = new Date(y + 1, 7, 31, 23, 59, 59);
-            return allEvents.filter(e => { const d = new Date(e.date); return d >= start && d <= end; });
+            return visibleEvents().filter(e => { const d = new Date(e.date); return d >= start && d <= end; });
+        }
+
+        function visibleEvents() {
+            return allEvents.filter(e => !hiddenCals.has(e.calUrl));
+        }
+
+        function toggleCal(url) {
+            hiddenCals.has(url) ? hiddenCals.delete(url) : hiddenCals.add(url);
+            saveHiddenCals();
+        }
+
+        function showAllCals() {
+            calMeta.forEach(c => hiddenCals.delete(c.url));
+            saveHiddenCals();
+        }
+
+        function saveHiddenCals() {
+            try { localStorage.setItem('io-hidden-cals', JSON.stringify([...hiddenCals])); } catch { }
+            renderAll();
         }
 
         // ── Init ──────────────────────────────────────────────────────────────────
@@ -1151,7 +1223,7 @@
                     const color = inputs[i]?.color || CAL_COLORS[i % CAL_COLORS.length];
                     if (r.error) { errors.push(`${r.name}: ${r.error}`); return; }
                     calMeta.push({ name: r.name, color, url: r.url });
-                    r.events.forEach(e => allEvents.push({ ...e, calName: r.name, color }));
+                    r.events.forEach(e => allEvents.push({ ...e, calName: r.name, calUrl: r.url, color }));
                 });
 
                 allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -1267,16 +1339,23 @@
   `).join('');
         }
 
+        document.getElementById('cal-legend').addEventListener('click', ev => {
+            const item = ev.target.closest('[data-cal]');
+            if (item) toggleCal(calMeta[+item.dataset.cal].url);
+        });
+
         function renderLegend() {
             const sec = document.getElementById('legend-section');
             if (!calMeta.length) { sec.style.display = 'none'; return; }
             sec.style.display = 'block';
-            document.getElementById('cal-legend').innerHTML = calMeta.map(c => `
-    <div class="cal-legend-item">
-      <span style="width:10px;height:10px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block"></span>
-      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.name)}</span>
-    </div>
-  `).join('');
+            const anyHidden = calMeta.some(c => hiddenCals.has(c.url));
+            document.getElementById('cal-legend').innerHTML = calMeta.map((c, i) => `
+    <button class="cal-legend-item ${hiddenCals.has(c.url) ? 'is-hidden' : ''}" data-cal="${i}"
+      title="${hiddenCals.has(c.url) ? 'Show' : 'Hide'} this course">
+      <span class="cal-legend-dot" style="background:${c.color};border-color:${c.color}"></span>
+      <span class="cal-legend-name">${esc(c.name)}</span>
+    </button>
+  `).join('') + (anyHidden ? '<button class="cal-legend-all" onclick="showAllCals()">Show all courses</button>' : '');
         }
 
         function renderTimeline() {
@@ -1413,12 +1492,14 @@
                 if (isPast && hasEvents) cls += ' is-overdue';
 
                 // One dot per course; the dot grows with the students' estimated workload for that day
-                const dots = groupByCourse(events).slice(0, 6).map(g => {
+                const groups = groupByCourse(events).slice(0, 6);
+                const step = groups.length > 1 ? Math.min(10, 28 / (groups.length - 1)) : 0; // px between dot centres
+                const dots = groups.map((g, i) => {
                     const hours = g.events.reduce((sum, e) => sum + (effortHours(e) ?? 0), 0);
                     const size = workloadDotSize(hours);
                     const tip = `${g.calName}: ${g.events.length} item${g.events.length > 1 ? 's' : ''}`
                         + (hours ? ` · ~${Math.max(1, Math.round(hours))}h workload` : ' · no workload estimate yet');
-                    return `<span class="sem-dot" style="background:${g.color};width:${size}px;height:${size}px" title="${esc(tip)}"></span>`;
+                    return `<span class="sem-dot" style="background:${g.color};width:${size}px;height:${size}px;left:calc(50% + ${(i - (groups.length - 1) / 2) * step}px)" title="${esc(tip)}"></span>`;
                 }).join('');
 
                 const onclick = hasEvents ? `onclick="showDay('${key}')"` : '';
@@ -1527,7 +1608,7 @@
         }
 
         function showDay(key) {
-            const events = buildEventsByDay()[key] || [];
+            const events = buildEventsByDay(visibleEvents())[key] || [];
             if (!events.length) return;
 
             const date = new Date(key + 'T12:00:00');

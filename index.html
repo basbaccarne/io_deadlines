@@ -1294,8 +1294,7 @@
 
             const grouped = {};
             events.forEach(e => {
-                const d = new Date(e.date); d.setHours(0, 0, 0, 0);
-                const k = d.toISOString().slice(0, 10);
+                const k = dayKey(new Date(e.date));
                 (grouped[k] = grouped[k] || []).push(e);
             });
 
@@ -1323,7 +1322,7 @@
           <div class="event-meta">
             <span class="badge badge-${u.cls}">${u.label}</span>
             <span class="cal-chip" style="color:${e.color};border-color:${e.color}40">${esc(e.calName)}</span>
-            ${e.timeStr ? `<span class="event-time">${e.timeStr}</span>` : ''}
+            ${eventTime(e) ? `<span class="event-time">${eventTime(e)}</span>` : ''}
           </div>
           ${e.description ? `<div class="event-desc">${esc(e.description)}</div>` : ''}
           ${e.location ? `<div class="event-location">📍 ${esc(e.location)}</div>` : ''}
@@ -1348,11 +1347,20 @@
             else renderTimeline();
         }
 
+        // YYYY-MM-DD in the viewer's own timezone (toISOString would use UTC and shift late-evening deadlines a day back)
+        function dayKey(d) {
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        // Clock time in the viewer's timezone; the server runs in UTC
+        function eventTime(e) {
+            return e.allDay ? '' : new Date(e.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        }
+
         function buildEventsByDay(events = allEvents) {
             const map = {};
             events.forEach(e => {
-                const d = new Date(e.date); d.setHours(0, 0, 0, 0);
-                const k = d.toISOString().slice(0, 10);
+                const k = dayKey(new Date(e.date));
                 (map[k] = map[k] || []).push(e);
             });
             return map;
@@ -1536,7 +1544,7 @@
                             <div class="event-meta">
                                 <span class="badge badge-${u.cls}">${u.label}</span>
                                 <span class="cal-chip" style="color:${e.color};border-color:${e.color}40">${esc(e.calName)}</span>
-                                ${e.timeStr ? `<span class="event-time">${e.timeStr}</span>` : ''}
+                                ${eventTime(e) ? `<span class="event-time">${eventTime(e)}</span>` : ''}
                             </div>
                             ${e.description ? `<div class="event-desc">${esc(e.description)}</div>` : ''}
                             ${effortBlock(e)}

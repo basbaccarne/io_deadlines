@@ -261,7 +261,6 @@ function parseICS(text, fallbackName) {
       date: date.toISOString(),
       endDate: endDate ? endDate.toISOString() : null,
       allDay,
-      timeStr: allDay ? null : date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
     });
   });
 
@@ -272,7 +271,8 @@ function parseICS(text, fallbackName) {
 function parseICSDate(s) {
   s = s.replace(/^[^:]*:/, '').trim();
   if (/^\d{8}$/.test(s))
-    return new Date(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8));
+    // All-day: noon UTC, so the date stays the same in any European/American timezone
+    return new Date(Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8), 12));
   if (/^\d{8}T\d{6}Z?$/.test(s)) {
     const [y, mo, d, h, mi, sec] = [s.slice(0,4), s.slice(4,6), s.slice(6,8), s.slice(9,11), s.slice(11,13), s.slice(13,15)];
     return s.endsWith('Z')

@@ -1,0 +1,5 @@
+project_id = "io-deadlines"
+
+# The dashboard on the webshare calls this without signing in, like it calls /api on Render
+[functions.deadlines]
+verify_jwt = false

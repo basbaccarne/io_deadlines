@@ -21,7 +21,7 @@ Then open **http://localhost:3000** in your browser.
 
 1. Add one or more `.ics` calendar feed URLs in the sidebar (Ufora, Google Calendar, Outlook, etc.)
 2. Click **Load calendars**
-3. Your URLs are saved to `calendars.json` so they persist between sessions
+3. Your URLs are saved in your browser, so they persist between visits (they're never stored on the server, since feed URLs contain personal tokens)
 
 ### Programme-year presets
 
@@ -35,6 +35,16 @@ Clicking one loads its feeds; editing the list switches back to **Custom**. You 
 2IO:
   - https://...
 ```
+
+#### Adding or changing feed URLs
+
+1. In Ufora, open the course → *Calendar* → *Subscribe*, and copy the feed URL (it contains the course's `feedOU=` number).
+2. Add it to `presets.yaml` under the right set, as a new `- https://…` line (indented two spaces). A URL listed twice is shown once.
+3. Update both versions:
+   - **Render:** commit and push `presets.yaml`. Render redeploys and the new feeds show up.
+   - **Webshare:** run `npm run deploy:fn`. The function has its own copy of `presets.yaml`, so without this step the webshare keeps showing the old sets. No need to copy `index.html` again.
+4. Check the set on both sites, e.g. https://io-deadlines.onrender.com/?set=1IO and
+   https://industrialdesign.ugent.be/deadlines/?set=1IO. The number of feeds appears when you hover over the set's button.
 
 ## Features
 
@@ -63,6 +73,18 @@ On Render: *Environment → Add environment variable* → `DATABASE_URL` = the c
 4. Put the URI in `DATABASE_URL` on Render and deploy. The logs should show `Effort estimates: Postgres connected`; the `effort_estimates` table then appears in Supabase's *Table Editor*.
 
 Free Supabase projects pause after a week without activity; restore them from the dashboard.
+
+## Hosting on the UGent webshare
+
+The same `index.html` also runs on https://industrialdesign.ugent.be/deadlines/. The webshare
+can't fetch the feeds itself, so there the page calls the Supabase function in
+`supabase/functions/deadlines` instead of `/api`. It shares the `effort_estimates` table with
+Render.
+
+- **After changing `presets.yaml` or the function:** `npm run deploy:fn` (needs `npx supabase login` once).
+- **After changing `index.html`:** copy it to the webshare's `deadlines` folder.
+
+Details, including what the webshare can and can't do: [docs/hosting.md](docs/hosting.md).
 
 ## Requirements
 

@@ -5,6 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Deadline Dashboard</title>
+    <!-- iO logo, inline: server.js answers every path with index.html, so a separate icon file would not load on Render -->
+    <link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAP1BMVEUfYsohY8kiY8gTXNMjZMZPfJxqiYaKmmt2j3xeg5IybbZFdqarqk3Xwij80wT/4wDJujW+tTyco1pagpOVoGHtxBnoAAABpUlEQVRYw+1V2Y7DIAzE2OQwIVfz/9+6Bkw27VYhVbVvmZemEozHwxiMuXHjxo2LAIAvCcyXBFGDFXwk5CA7fmLG5Wak2L4UCJFc07Zdz4jXugFZKOXUAPRDGMdpFMydRbpAgM0yDz4xENI6HhBcnQGwTeWcMFjkMI1P6GoMgJxXLuKZ4TC+oqkwWGxULcv3MP6FRzhX0CsBAT50z9x4dsWMpUKgsqcVCZe8ZcsxcMrgzhkoL1ykU3VjQCAJBhVBG9qKC9y1fWRSN1grkloy1+JEJsWW9Dznorj4K/ZWGMCSjQWzbWs5NyguVAkkjHAksBpr9FcJyMsSwu332OCDFkCkBoo/zXPBg4nngy0BnDrRXUItPdh0jH7/f7o/tZokmLkMEIotWAbjcR4knQCRsI/FODhmbkuuKxaq8mDlNHH+vQn2L1cN4qpja9+N89RW9u/WzRgl+FeGrWJAFJDvoClKIOSnKyE0WLmZo+qMOIRyqRnsdyPCxiWVJyCmDE4nKXlCbtp13Tpn0dT3v2EEfVeub0+FD70Ckb5tX7+SN27cuPGv+AEsKRyig0s47gAAAABJRU5ErkJggg==" />
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1027,6 +1030,11 @@
 
     <script>
         // 14 clearly different hues, ordered so neighbouring courses contrast most
+        // On Render, server.js next to this page answers /api. The UGent webshare can only serve files,
+        // so there the Supabase function does the same work (supabase/functions/deadlines); ?supabase forces it for testing.
+        const USE_SUPABASE = location.hostname === 'industrialdesign.ugent.be' || new URLSearchParams(location.search).has('supabase');
+        const API = USE_SUPABASE ? 'https://twhrfteqfobetvrjfrsj.supabase.co/functions/v1/deadlines' : '/api';
+
         const CAL_COLORS = [
             '#2563eb', '#dc2626', '#16a34a', '#ea580c', '#9333ea', '#0891b2', '#db2777',
             '#65a30d', '#92400e', '#1e3a8a', '#c026d3', '#0f766e', '#ca8a04', '#475569'
@@ -1099,7 +1107,7 @@
         });
 
         (async () => {
-            presets = await fetch('/api/presets').then(r => r.json()).catch(() => []);
+            presets = await fetch(API + '/presets').then(r => r.json()).catch(() => []);
             renderPresets();
             renderFilters();
             document.getElementById('url-list').addEventListener('input', switchToCustom);
@@ -1111,14 +1119,20 @@
         })();
 
         // ── Presets ───────────────────────────────────────────────────────────────
-        async function restoreCustom() {
-            const saved = await fetch('/api/calendars').then(r => r.json()).catch(() => []);
+        // A custom list is kept in this browser only: feed URLs carry personal tokens
+        function loadCustom() {
+            try { return JSON.parse(localStorage.getItem('io-custom-cals')) || []; } catch { return []; }
+        }
+
+        function saveCustom(calendars) {
+            localStorage.setItem('io-custom-cals', JSON.stringify(calendars));
+        }
+
+        function restoreCustom() {
+            const saved = loadCustom();
             clearRows();
-            if (saved.length) {
-                saved.forEach(c => addRow(c.url));
-            } else {
-                addRow('https://ufora.ugent.be/d2l/le/calendar/feed/user/feed.ics?token=agz66z27vv9iv7s810e9b');
-            }
+            if (saved.length) saved.forEach(c => addRow(c.url));
+            else addRow();
         }
 
         function renderPresets() {
@@ -1202,16 +1216,10 @@
             setStatus('<span><span class="spinner">⟳</span> Fetching…</span>');
 
             // Only a custom list is persisted; presets live in presets.yaml
-            if (activePreset === null) try {
-                await fetch('/api/calendars', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ calendars: inputs })
-                });
-            } catch { }
+            if (activePreset === null) try { saveCustom(inputs); } catch { }
 
             try {
-                const res = await fetch('/api/fetch', {
+                const res = await fetch(API + '/fetch', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ urls: inputs.map(c => ({ url: c.url, color: c.color })) })
@@ -1515,7 +1523,7 @@
 
         // ── Student effort estimates ──────────────────────────────────────────────
         async function loadEfforts() {
-            efforts = await fetch('/api/estimates?voter=' + encodeURIComponent(voterId))
+            efforts = await fetch(API + '/estimates?voter=' + encodeURIComponent(voterId))
                 .then(r => r.json()).catch(() => ({}));
         }
 
@@ -1574,7 +1582,7 @@
             refreshEffortBlocks(taskId);
 
             try {
-                const res = await fetch('/api/estimates', {
+                const res = await fetch(API + '/estimates', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ taskId, voterId, phase, bucket })

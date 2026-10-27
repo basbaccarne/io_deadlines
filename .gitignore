@@ -1,2 +1,6 @@
 node_modules/
 estimates.json
+supabase/functions/deadlines/presets.generated.ts
+supabase/.temp/
+calendars.json
+*.log

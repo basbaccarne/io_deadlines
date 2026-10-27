@@ -4,7 +4,8 @@
   "description": "Local ICS calendar deadline dashboard",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "deploy:fn": "node scripts/build-presets.mjs && npx supabase functions deploy deadlines --project-ref twhrfteqfobetvrjfrsj"
   },
   "dependencies": {
     "pg": "^8.23.0"

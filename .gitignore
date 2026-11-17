@@ -4,3 +4,5 @@ supabase/functions/deadlines/presets.generated.ts
 supabase/.temp/
 calendars.json
 *.log
+start-dates.json
+_to_delete/

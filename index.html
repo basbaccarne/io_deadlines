@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Deadline Dashboard</title>
-    <!-- iO logo, inline: server.js answers every path with index.html, so a separate icon file would not load on Render -->
+    <!-- iO logo, inline so index.html stays a single file to copy to the webshare -->
     <link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAP1BMVEUfYsohY8kiY8gTXNMjZMZPfJxqiYaKmmt2j3xeg5IybbZFdqarqk3Xwij80wT/4wDJujW+tTyco1pagpOVoGHtxBnoAAABpUlEQVRYw+1V2Y7DIAzE2OQwIVfz/9+6Bkw27VYhVbVvmZemEozHwxiMuXHjxo2LAIAvCcyXBFGDFXwk5CA7fmLG5Wak2L4UCJFc07Zdz4jXugFZKOXUAPRDGMdpFMydRbpAgM0yDz4xENI6HhBcnQGwTeWcMFjkMI1P6GoMgJxXLuKZ4TC+oqkwWGxULcv3MP6FRzhX0CsBAT50z9x4dsWMpUKgsqcVCZe8ZcsxcMrgzhkoL1ykU3VjQCAJBhVBG9qKC9y1fWRSN1grkloy1+JEJsWW9Dznorj4K/ZWGMCSjQWzbWs5NyguVAkkjHAksBpr9FcJyMsSwu332OCDFkCkBoo/zXPBg4nngy0BnDrRXUItPdh0jH7/f7o/tZokmLkMEIotWAbjcR4knQCRsI/FODhmbkuuKxaq8mDlNHH+vQn2L1cN4qpja9+N89RW9u/WzRgl+FeGrWJAFJDvoClKIOSnKyE0WLmZo+qMOIRyqRnsdyPCxiWVJyCmDE4nKXlCbtp13Tpn0dT3v2EEfVeub0+FD70Ckb5tX7+SN27cuPGv+AEsKRyig0s47gAAAABJRU5ErkJggg==" />
     <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -369,21 +369,18 @@
         /* Main content */
         .page-title {
             font-family: 'Instrument Serif', serif;
-            font-size: 36px;
+            font-size: 2.5rem;
             line-height: 1.1;
             color: var(--text);
-            margin-bottom: 0.25rem;
+            margin-bottom: 2rem;
+            text-align: left;
+            letter-spacing: 0.05em;
         }
 
         .page-title em {
             font-style: italic;
         }
 
-        .page-date {
-            font-size: 13px;
-            color: var(--text-3);
-            margin-bottom: 2rem;
-        }
 
         /* Stats row */
         .stats {
@@ -480,13 +477,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
-        .event-left {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding-top: 2px;
-        }
 
         .urgency-bar {
             width: 3px;
@@ -579,6 +569,7 @@
             border: 1px solid;
             font-family: 'DM Sans', sans-serif;
             background: transparent;
+            font-weight: 400;
         }
 
         .event-time {
@@ -601,6 +592,16 @@
             font-size: 11px;
             color: var(--text-3);
             margin-top: 3px;
+        }
+
+        .event-timeline {
+            font-size: 11px;
+            color: var(--text-2);
+            margin-top: 5px;
+            padding: 4px 8px;
+            background: var(--surface2);
+            border-left: 2px solid var(--accent);
+            border-radius: 3px;
         }
 
         /* States */
@@ -722,6 +723,29 @@
             border-bottom-color: var(--accent);
         }
 
+        /* Workload view: Gantt chart drawn with D3 into #workload-content (see renderWorkload) */
+        #workload-view {
+            max-width: 100%;
+            padding: 0;
+        }
+
+        #workload-content > .wl-head {
+            position: sticky; top: 0; z-index: 2;
+            display: flex; width: max-content;
+            background: var(--surface);
+        }
+        #workload-content .wl-corner {
+            position: sticky; left: 0; z-index: 3;
+            flex: none; background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+        #workload-content > .wl-body { display: flex; width: max-content; }
+        #workload-content .wl-labels {
+            position: sticky; left: 0; z-index: 1;
+            flex: none; background: var(--surface);
+        }
+        #workload-content svg { display: block; flex: none; }
+
         /* Semester grid */
         .sem-grid {
             display: grid;
@@ -842,6 +866,67 @@
 
         .effort-stats strong { color: var(--text); font-weight: 500; }
 
+        .effort-specific {
+            margin-top: 8px;
+            font-size: 11px;
+        }
+
+        .effort-specific label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-2);
+        }
+
+        .effort-input {
+            width: 60px;
+            padding: 4px 6px;
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        .effort-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #fff;
+        }
+
+        .start-date {
+            margin-top: 8px;
+            font-size: 11px;
+        }
+
+        .start-date label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-2);
+        }
+
+        .start-date-input {
+            padding: 4px 6px;
+            font-size: 11px;
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        .start-date-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #fff;
+        }
+
+        .start-date-display {
+            font-weight: 500;
+            color: var(--accent);
+        }
+
         /* Day modal */
         .modal-overlay {
             position: fixed;
@@ -949,6 +1034,7 @@
             }
         }
     </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
 <body>
@@ -1003,12 +1089,12 @@
 
         <!-- Main -->
         <main class="main" role="main">
-            <div class="page-title">Our <em>upcoming</em><br />IO deadlines</div>
-            <div class="page-date" id="page-date"></div>
+            <div class="page-title" id="page-title"></div>
 
             <div class="view-tabs" id="view-tabs" style="display:none">
                 <button class="view-tab active" id="tab-semester" onclick="setView('semester')">Semester</button>
                 <button class="view-tab" id="tab-timeline" onclick="setView('timeline')">Timeline</button>
+                <button class="view-tab" id="tab-workload" onclick="setView('workload')">Workload</button>
             </div>
 
             <div id="timeline-view" style="display:none">
@@ -1022,6 +1108,10 @@
                 </div>
             </div>
 
+            <div id="workload-view" style="display:none">
+                <div id="workload-content"></div>
+            </div>
+
             <div id="semester-view">
                 <div id="semester-grid"></div>
             </div>
@@ -1029,12 +1119,10 @@
     </div>
 
     <script>
-        // 14 clearly different hues, ordered so neighbouring courses contrast most
-        // On Render, server.js next to this page answers /api. The UGent webshare can only serve files,
-        // so there the Supabase function does the same work (supabase/functions/deadlines); ?supabase forces it for testing.
-        const USE_SUPABASE = location.hostname === 'industrialdesign.ugent.be' || new URLSearchParams(location.search).has('supabase');
-        const API = USE_SUPABASE ? 'https://twhrfteqfobetvrjfrsj.supabase.co/functions/v1/deadlines' : '/api';
+        // All data (presets, feeds, estimates, start dates) goes through the Supabase Edge Function
+        const API = 'https://twhrfteqfobetvrjfrsj.supabase.co/functions/v1/deadlines';
 
+        // 14 clearly different hues, ordered so neighbouring courses contrast most
         const CAL_COLORS = [
             '#2563eb', '#dc2626', '#16a34a', '#ea580c', '#9333ea', '#0891b2', '#db2777',
             '#65a30d', '#92400e', '#1e3a8a', '#c026d3', '#0f766e', '#ca8a04', '#475569'
@@ -1050,7 +1138,9 @@
         let yearOffset = 0;
         let presets = [];
         let activePreset = null;
-        let efforts = {}; // taskId → { before: { counts, mine }, after: { counts, mine } }
+        let efforts = {}; // taskId → { before: { counts, mine, specificHours }, after: { counts, mine, specificHours } }
+        let startDates = {}; // taskId → { startDate, votes }
+        let workloadEventsCache = []; // Rows of the workload chart (merged, sorted by deadline)
 
         // Hour ranges students can pick; `mid` is used to compute an average
         const EFFORT_BUCKETS = [
@@ -1102,9 +1192,6 @@
         }
 
         // ── Init ──────────────────────────────────────────────────────────────────
-        document.getElementById('page-date').textContent = new Date().toLocaleDateString('en-GB', {
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-        });
 
         (async () => {
             presets = await fetch(API + '/presets').then(r => r.json()).catch(() => []);
@@ -1247,6 +1334,7 @@
 
                 activeFilter = 'all';
                 await loadEfforts();
+                await loadStartDates();
                 renderAll();
             } catch (e) {
                 setStatus('Server error: ' + e.message, true);
@@ -1293,12 +1381,21 @@
 
         function renderAll() {
             document.getElementById('view-tabs').style.display = 'flex';
+            renderPageTitle();
             renderYearNav();
             renderStats();
             renderFilters();
             renderLegend();
             if (currentView === 'timeline') renderTimeline();
+            else if (currentView === 'workload') renderWorkload();
             else renderSemester();
+        }
+
+        function renderPageTitle() {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = today.toLocaleDateString('en-US', options);
+            document.getElementById('page-title').textContent = dateStr;
         }
 
         function renderYearNav() {
@@ -1402,15 +1499,21 @@
 
                 grouped[key].forEach(e => {
                     const u = urgency(e.date);
+                    const startDate = startDateOf(e);
+                    const startDateObj = startDate ? new Date(startDate + 'T12:00:00') : null;
+                    const startDateStr = startDateObj ? startDateObj.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '';
+                    const endDateStr = new Date(e.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+                    const startDateDisplay = startDateObj ? `<div class="event-timeline" data-task="${esc(e.id)}">📅 ${startDateStr} → ${endDateStr}</div>` : '';
                     html += `<div class="event-card">
         <div class="urgency-bar bar-${u.cls}"></div>
         <div class="event-body">
-          <div class="event-title">${esc(e.summary)}</div>
+          <div class="event-title">${esc(cleanSummary(e.summary))}</div>
           <div class="event-meta">
             <span class="badge badge-${u.cls}">${u.label}</span>
             <span class="cal-chip" style="color:${e.color};border-color:${e.color}40">${esc(e.calName)}</span>
             ${eventTime(e) ? `<span class="event-time">${eventTime(e)}</span>` : ''}
           </div>
+          ${startDateDisplay}
           ${e.description ? `<div class="event-desc">${esc(e.description)}</div>` : ''}
           ${e.location ? `<div class="event-location">📍 ${esc(e.location)}</div>` : ''}
           ${effortBlock(e)}
@@ -1428,10 +1531,13 @@
             currentView = v;
             document.getElementById('timeline-view').style.display = v === 'timeline' ? '' : 'none';
             document.getElementById('semester-view').style.display = v === 'semester' ? '' : 'none';
+            document.getElementById('workload-view').style.display = v === 'workload' ? '' : 'none';
             document.getElementById('tab-timeline').classList.toggle('active', v === 'timeline');
             document.getElementById('tab-semester').classList.toggle('active', v === 'semester');
+            document.getElementById('tab-workload').classList.toggle('active', v === 'workload');
             if (v === 'semester') renderSemester();
-            else renderTimeline();
+            else if (v === 'timeline') renderTimeline();
+            else if (v === 'workload') renderWorkload();
         }
 
         // YYYY-MM-DD in the viewer's own timezone (toISOString would use UTC and shift late-evening deadlines a day back)
@@ -1527,6 +1633,377 @@
                 .then(r => r.json()).catch(() => ({}));
         }
 
+        // Keeps the current (local) dates if the server can't answer, instead of wiping them
+        async function loadStartDates() {
+            try {
+                const res = await fetch(API + '/start-dates');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (data && typeof data === 'object' && !data.error) startDates = data;
+            } catch (err) {
+                console.error('Could not load start dates:', err.message);
+            }
+        }
+
+        // Hand-picked short names, keyed by course code (the part before " - " in the calendar name).
+        // Used instead of the automatic abbreviation below when it reads badly.
+        const COURSE_SHORT_NAMES = {
+            E620900A: 'Project HCD',          // Project gebruiksgericht ontwerpen
+            E623400A: 'Materialen & energie', // Materialen en energie
+            E623500A: 'Life cycle design',    // Life Cycle design
+            E624500A: 'Design 4 sustainability', // Design for Sustainability
+            E627000A: 'Sustainability project', // Design for Sustainability Project
+            E629000A: 'Project adv. engineering', // Project geavanceerde engineering (3IO)
+            E640970A: 'Slimme producten',     // Ontwerp van slimme producten
+        };
+
+        // Sentence case for every short name: first word capitalised, the rest lower case,
+        // except acronyms and numerals (CAD, CAID, HCD, II), which stay as they are
+        function sentenceCase(name) {
+            return name.split(' ').map((w, i) => {
+                if (/^[A-Z0-9]{2,}(-|$)/.test(w)) return w; // CAD, II, CAE-gericht
+                const lower = w.toLowerCase();
+                return i === 0 ? lower.charAt(0).toUpperCase() + lower.slice(1) : lower;
+            }).join(' ');
+        }
+
+        function abbreviateCourse(calName) {
+            const code = calName.split(' - ')[0].trim();
+            return sentenceCase(COURSE_SHORT_NAMES[code] || autoAbbreviateCourse(calName));
+        }
+
+        function autoAbbreviateCourse(calName) {
+            const courseName = calName.includes(' - ') ? calName.split(' - ').slice(1).join(' - ') : calName;
+            
+            // Special handling for courses with "vaardigheden"
+            if (courseName.includes('vaardigheden')) {
+                const words = courseName.split(/\s+/);
+                const stopWords = new Set(['voor', 'en', 'het', 'de', 'in', 'om', 'van', 'naar', 'bij', 'door', 'als', 'met', 'aan', 'onderzoeks', 'industrieel', 'ontwerpers', 'ontwerp', 'ontwerpstrategieën']);
+                const filtered = words.filter(w => !stopWords.has(w.toLowerCase()));
+                
+                if (filtered.length > 0) {
+                    return filtered[0] + ' vaardigheden';
+                }
+            }
+            
+            const words = courseName.split(/\s+/);
+            const stopWords = new Set(['voor', 'en', 'het', 'de', 'in', 'om', 'van', 'naar', 'bij', 'door', 'als', 'met', 'aan']);
+            const filtered = words.filter(w => !stopWords.has(w.toLowerCase()));
+            
+            if (filtered.length <= 2) {
+                return filtered.join(' ');
+            }
+            
+            return filtered[0] + ' ' + filtered[filtered.length - 1];
+        }
+
+        // Start date rule: the date stored in Supabase if there is one,
+        // otherwise two weeks before the deadline. Defaults are never saved.
+        const DEFAULT_START_DAYS = 14;
+
+        function hasStoredStartDate(e) {
+            return !!startDates[e.id]?.startDate;
+        }
+
+        function startDateOf(e) { // → 'YYYY-MM-DD'
+            if (hasStoredStartDate(e)) return startDates[e.id].startDate;
+            const d = new Date(e.date);
+            d.setDate(d.getDate() - DEFAULT_START_DAYS);
+            // local date, not toISOString(): that would shift a day for deadlines around midnight
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function renderWorkload() {
+            const events = filterEvents(eventsInYear());
+            const container = document.getElementById('workload-content');
+
+            if (!events.length) {
+                container.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">Nothing here</div>
+      <div class="empty-sub">No deadlines match this filter.</div>
+    </div>`;
+                return;
+            }
+
+            // Every event has a start date (stored, or the two-week default)
+            workloadEventsCache = events.map(e => ({
+                event: e,
+                startDate: new Date(startDateOf(e) + 'T12:00:00'),
+                endDate: new Date(e.date)
+            }));
+
+            // 0. Cluster assignments with identical names AND dates
+            // Group by assignment name + end date (clean summary without hours)
+            const assignmentGroups = new Map();
+            workloadEventsCache.forEach(ew => {
+                const cleanName = cleanSummary(ew.event.summary);
+                // Create a key that includes both name and end date
+                const endDateStr = ew.endDate.toISOString().split('T')[0];
+                const groupKey = `${cleanName}|${endDateStr}`;
+                
+                if (!assignmentGroups.has(groupKey)) {
+                    assignmentGroups.set(groupKey, []);
+                }
+                assignmentGroups.get(groupKey).push(ew);
+            });
+
+            // Replace each group with a single merged entry
+            const mergedCache = [];
+            assignmentGroups.forEach((group, groupKey) => {
+                if (group.length === 1) {
+                    // Single occurrence, add as-is
+                    mergedCache.push(group[0]);
+                } else {
+                    // Multiple occurrences with same name AND date: merge into one
+                    let mergedStartDate = group[0].startDate;
+                    let mergedEndDate = group[0].endDate;
+                    let mergedEvent = group[0].event;
+
+                    group.forEach(ew => {
+                        if (ew.startDate < mergedStartDate) mergedStartDate = ew.startDate;
+                        // Note: endDate should be the same for all in this group
+                    });
+
+                    // Validate merged dates: if start > end, clamp start to 2 weeks before end
+                    if (mergedStartDate > mergedEndDate) {
+                        const twoWeeksBefore = new Date(mergedEndDate);
+                        twoWeeksBefore.setDate(twoWeeksBefore.getDate() - 14);
+                        mergedStartDate = twoWeeksBefore;
+                    }
+
+                    mergedCache.push({
+                        event: mergedEvent,
+                        startDate: mergedStartDate,
+                        endDate: mergedEndDate,
+                        isCluster: true,
+                        clusterSize: group.length
+                    });
+                }
+            });
+
+            workloadEventsCache = mergedCache;
+
+            // One row per assignment, ordered by deadline (earliest first); ties by start date
+            workloadEventsCache.sort((a, b) => (a.endDate - b.endDate) || (a.startDate - b.startDate));
+
+            // Calculate academic year boundaries
+            const semYear = getAcademicYear();
+            const yearStart = new Date(semYear, 8, 1); // Sep 1
+            const yearEnd = new Date(semYear + 1, 7, 31); // Aug 31 (52 weeks)
+
+            // Calculate week boundaries
+            const weeks = [];
+            const cur = new Date(yearStart);
+            cur.setDate(cur.getDate() - (cur.getDay() === 0 ? 6 : cur.getDay() - 1)); // Align to Monday
+            while (cur <= yearEnd && weeks.length < 52) {
+                const weekStart = new Date(cur);
+                const weekEnd = new Date(cur);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                weeks.push({ start: weekStart, end: weekEnd, index: weeks.length });
+                cur.setDate(cur.getDate() + 7);
+            }
+
+            // Clear and set up container
+            container.innerHTML = '';
+            container.style.overflow = 'auto';
+            container.style.border = '1px solid var(--border)';
+            container.style.borderRadius = '8px';
+            container.style.background = 'var(--surface)';
+            container.style.maxHeight = '500px';
+
+            // D3 Gantt Chart dimensions
+            // Extended right margin to accommodate labels without truncation
+            const margin = { top: 40, right: 300, bottom: 20, left: 220 };
+            const totalWidth = weeks.length * 80;
+            const svgWidth = totalWidth + margin.left + margin.right;
+
+            // Layout: the header and the course-name column are separate SVGs with CSS
+            // position: sticky, so the browser keeps them in place while scrolling (smooth,
+            // unlike moving them from a scroll handler). The drawing below keeps one shared
+            // coordinate system; each SVG shows its own slice of it.
+            const rowHeight = 36;
+            const headerHeight = 36;
+            const chartWidth = totalWidth + margin.right; // timeline + room for task names
+            const bodyHeight = workloadEventsCache.length * rowHeight + margin.bottom;
+
+            const head = d3.select(container).append('div').attr('class', 'wl-head');
+            head.append('div').attr('class', 'wl-corner').style('width', margin.left + 'px');
+            const headerSvg = head.append('svg').attr('width', chartWidth).attr('height', headerHeight);
+
+            const body = d3.select(container).append('div').attr('class', 'wl-body');
+            const labelsSvg = body.append('svg').attr('class', 'wl-labels')
+                .attr('width', margin.left).attr('height', bodyHeight);
+            const chartSvg = body.append('svg').attr('width', chartWidth).attr('height', bodyHeight);
+
+            // Week header (sticky at the top)
+            const headerGroup = headerSvg.append('g').attr('class', 'header-group')
+                .attr('transform', `translate(${-margin.left}, 0)`);
+            headerGroup.append('rect')
+                .attr('x', 0).attr('y', 0).attr('width', svgWidth).attr('height', 36)
+                .attr('fill', 'var(--surface)');
+
+            headerGroup.selectAll('.week-header')
+                .data(weeks)
+                .enter()
+                .append('g')
+                .attr('class', 'week-header')
+                .attr('transform', (d, i) => `translate(${margin.left + i * 80}, 0)`)
+                .append('text')
+                .attr('x', 4) // label sits at the week's Monday, where its gridline starts
+                .attr('y', 25)
+                .attr('text-anchor', 'start')
+                .attr('font-size', '11px')
+                .attr('fill', 'var(--text-3)')
+                .text(d => d.start.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }));
+
+            // Add divider line after header
+            headerGroup.append('line')
+                .attr('x1', margin.left)
+                .attr('x2', margin.left + totalWidth)
+                .attr('y1', 35)
+                .attr('y2', 35)
+                .attr('stroke', 'var(--border)')
+                .attr('stroke-width', 1);
+
+            // Event rows. Layers: row backgrounds, then week gridlines, then bars and task names
+            const contentGroup = chartSvg.append('g').attr('transform', `translate(${-margin.left}, 0)`);
+            const bgGroup = contentGroup.append('g');
+            const gridGroup = contentGroup.append('g');
+            const fgGroup = contentGroup.append('g');
+            const labelGroup = labelsSvg.append('g'); // course names (sticky on the left)
+            weeks.forEach((w, i) => gridGroup.append('line')
+                .attr('x1', margin.left + i * 80).attr('x2', margin.left + i * 80)
+                .attr('y1', 0).attr('y2', workloadEventsCache.length * rowHeight)
+                .attr('stroke', 'var(--border)').attr('stroke-width', 1));
+
+            workloadEventsCache.forEach((ew, rowIdx) => {
+                const e = ew.event;
+                const hours = effortHours(e) || 0;
+                const hoursDisplay = hours ? ` · ~${Math.max(1, Math.round(hours))}h` : '';
+
+
+                // Row background
+                bgGroup.append('rect')
+                    .attr('x', 0)
+                    .attr('y', rowIdx * rowHeight)
+                    .attr('width', svgWidth)
+                    .attr('height', rowHeight)
+                    .attr('fill', rowIdx % 2 === 0 ? 'transparent' : 'var(--surface2)')
+                    .attr('opacity', 0.5);
+
+                // Course label (left side, fixed)
+                const abbrevCourse = abbreviateCourse(e.calName);
+                labelGroup.append('rect')
+                    .attr('x', 0)
+                    .attr('y', rowIdx * rowHeight)
+                    .attr('width', margin.left)
+                    .attr('height', rowHeight)
+                    .attr('fill', 'var(--surface)')
+                    .attr('stroke', 'var(--border-subtle)')
+                    .attr('stroke-width', 1);
+
+                labelGroup.append('text')
+                    .attr('x', 10)
+                    .attr('y', rowIdx * rowHeight + rowHeight / 2 + 4)
+                    .attr('font-size', '11px')
+                    .attr('fill', e.color)
+                    .style('font-weight', '500')
+                    .style('cursor', 'pointer')
+                    .attr('title', e.calName)
+                    .text(abbrevCourse)
+                    .on('click', () => showEventDetails(e));
+
+                // Gantt bar: rounded rectangle from start date to deadline.
+                // Fill opacity encodes workload (time spent); outline stays in the course colour.
+                const dayPx = 80 / 7;
+                const timelineStart = new Date(weeks[0].start); timelineStart.setHours(0, 0, 0, 0);
+                const dayOffset = (date) => {
+                    const d = new Date(date); d.setHours(0, 0, 0, 0);
+                    return Math.round((d - timelineStart) / 86400000);
+                };
+                const maxX = margin.left + totalWidth;
+                const barX1 = Math.max(margin.left, margin.left + dayOffset(ew.startDate) * dayPx);
+                const barX2 = Math.min(maxX, margin.left + (dayOffset(ew.endDate) + 1) * dayPx);
+                const barHeight = 22;
+                const barY = rowIdx * rowHeight + (rowHeight - barHeight) / 2;
+                const fillOpacity = workloadOpacity(hours);
+                const strokeOpacity = workloadStrokeOpacity(hours);
+
+                const bar = fgGroup.append('rect')
+                    .attr('class', 'workload-gantt-bar')
+                    .attr('x', barX1)
+                    .attr('y', barY)
+                    .attr('width', Math.max(barX2 - barX1, dayPx))
+                    .attr('height', barHeight)
+                    .attr('rx', 6)
+                    .attr('ry', 6)
+                    .attr('fill', e.color)
+                    .attr('fill-opacity', fillOpacity)
+                    .attr('stroke', e.color)
+                    .attr('stroke-opacity', strokeOpacity)
+                    .attr('stroke-width', 1.5)
+                    .style('cursor', 'pointer')
+                    .on('click', () => showEventDetails(e))
+                    .on('mouseover', function() { d3.select(this).attr('fill-opacity', Math.min(1, fillOpacity + 0.15)).attr('stroke-opacity', 1).attr('stroke-width', 2); })
+                    .on('mouseout', function() { d3.select(this).attr('fill-opacity', fillOpacity).attr('stroke-opacity', strokeOpacity).attr('stroke-width', 1.5); });
+                bar.append('title').text(`${cleanSummary(e.summary)}${hoursDisplay || ' · no workload estimate yet'}`);
+
+                // Event label (with cluster indicator if applicable)
+                const clusterLabel = ew.isCluster && ew.clusterSize > 1 ? ` (×${ew.clusterSize})` : '';
+                fgGroup.append('text')
+                    .attr('x', Math.min(barX2, maxX) + 8)
+                    .attr('y', rowIdx * rowHeight + rowHeight / 2 + 4)
+                    .attr('font-size', '12px')
+                    .attr('fill', 'var(--text)')
+                    .style('cursor', 'pointer')
+                    .attr('title', `${cleanSummary(e.summary)}${hoursDisplay}${clusterLabel}`)
+                    .text(cleanSummary(e.summary) + hoursDisplay + clusterLabel)
+                    .on('click', () => showEventDetails(e));
+            });
+
+        }
+
+        function showEventDetails(e) {
+            const u = urgency(e.date);
+            const startDate = startDateOf(e);
+            const startDateObj = startDate ? new Date(startDate + 'T12:00:00') : null;
+            const startDateStr = startDateObj ? startDateObj.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '';
+            const endDateStr = new Date(e.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+            const startDateDisplay = startDateObj ? `<div class="event-timeline" data-task="${esc(e.id)}">📅 ${startDateStr} → ${endDateStr}</div>` : '';
+
+            const courseName = e.calName.includes(' - ') ? e.calName.split(' - ').slice(1).join(' - ') : e.calName;
+
+            const modalHtml = `
+      <div class="event-card">
+        <div class="urgency-bar bar-${u.cls}"></div>
+        <div class="event-body">
+          <div class="event-title">${esc(cleanSummary(e.summary))}</div>
+          <div class="event-meta">
+            <span class="badge badge-${u.cls}">${u.label}</span>
+            <span class="cal-chip" style="color:${e.color};border-color:${e.color}20;background-color:${e.color}08">${esc(courseName)}</span>
+            ${eventTime(e) ? `<span class="event-time">${eventTime(e)}</span>` : ''}
+          </div>
+          ${startDateDisplay}
+          ${e.description ? `<div class="event-desc">${esc(e.description)}</div>` : ''}
+          ${e.location ? `<div class="event-location">📍 ${esc(e.location)}</div>` : ''}
+          ${effortBlock(e)}
+        </div>
+      </div>`;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.onclick = () => modal.remove();
+            modal.innerHTML = `
+      <div class="modal-box" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+        <div class="modal-content">
+          ${modalHtml}
+        </div>
+      </div>`;
+            document.body.appendChild(modal);
+        }
+
         function effortPhase(e) {
             return new Date(e.endDate || e.date) < new Date() ? 'after' : 'before';
         }
@@ -1538,30 +2015,58 @@
             return { n, avg, hours: avg < 1 ? '<1h' : `~${Math.round(avg)}h` };
         }
 
-        // Best available workload for an item: actual time if reported, else expected time
+        // Best available workload for an item: specific hours if set, else actual/expected time average
         function effortHours(e) {
             const data = efforts[e.id] || {};
+            const phase = effortPhase(e);
+            const specific = data[phase]?.specificHours;
+            if (specific) return specific;
             return (effortStat(data.after) || effortStat(data.before))?.avg ?? null;
         }
 
-        // 5px without estimates, growing to 24px at 25h+ (square root, so small tasks stay distinguishable)
+        // 5px without estimates, growing more gradually to 16px at 25h+ (temperate scaling for less visual difference)
         function workloadDotSize(hours) {
-            return hours ? Math.round(7 + 17 * Math.sqrt(Math.min(hours, 25) / 25)) : 5;
+            return hours ? Math.round(6 + 10 * Math.cbrt(Math.min(hours, 25) / 25)) : 5;
+        }
+
+        // Gantt bar fill opacity: faint without an estimate, rising to 0.85 at 25h+
+        function workloadOpacity(hours) {
+            if (!hours) return 0.06;
+            return +(0.12 + 0.73 * Math.sqrt(Math.min(hours, 25) / 25)).toFixed(2);
+        }
+
+        // Outline opacity: wide range so workload differences read clearly.
+        // 0.12 without an estimate, then from 0.2 (≈0h) to 1 at 25h+; the 0.75 power keeps
+        // the low end spread out instead of bunching small loads together
+        function workloadStrokeOpacity(hours) {
+            if (!hours) return 0.12;
+            return +(0.2 + 0.8 * Math.pow(Math.min(hours, 25) / 25, 0.75)).toFixed(2);
         }
 
         function effortBlock(e) {
             const phase = effortPhase(e);
             const data = efforts[e.id] || {};
             const mine = data[phase]?.mine ?? null;
+            const specificHours = data[phase]?.specificHours ?? '';
             const question = phase === 'after' ? 'How long did this take you?' : 'How long do you expect this to take?';
             const stats = [['before', 'expected'], ['after', 'took']]
                 .map(([p, verb]) => { const s = effortStat(data[p]); return s && `students ${verb} <strong>${s.hours}</strong> (${s.n})`; })
                 .filter(Boolean).join(' · ');
+            const startDate = startDateOf(e);
+            const startDateStr = startDate ? new Date(startDate + 'T12:00:00').toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '';
             return `<div class="effort" data-task="${esc(e.id)}" data-phase="${phase}">
                 <div class="effort-q">${question}</div>
                 <div class="effort-btns">${EFFORT_BUCKETS.map((b, i) =>
                     `<button class="effort-btn ${mine === i ? 'mine' : ''}" data-bucket="${i}">${b.label}</button>`).join('')}</div>
+                <div class="effort-specific">
+                    <label>Or specify exact hours: <input type="number" step="0.5" min="0" max="500" placeholder="e.g., 2.5" class="effort-input" data-task="${esc(e.id)}" value="${specificHours}" /></label>
+                </div>
                 ${stats ? `<div class="effort-stats">${stats}</div>` : ''}
+                <div class="start-date">
+                    <label>Start date: 
+                    <input type="date" class="start-date-input" data-task="${esc(e.id)}" value="${startDate}" />
+                    <span class="start-date-display">${startDateStr}${hasStoredStartDate(e) ? '' : ' (default: 2 weeks before)'}</span></label>
+                </div>
             </div>`;
         }
 
@@ -1573,7 +2078,7 @@
             const picked = +btn.dataset.bucket;
 
             // Clicking your current answer again removes it
-            const ph = ((efforts[taskId] ||= {})[phase] ||= { counts: EFFORT_BUCKETS.map(() => 0), mine: null });
+            const ph = ((efforts[taskId] ||= {})[phase] ||= { counts: EFFORT_BUCKETS.map(() => 0), mine: null, specificHours: null });
             const prev = ph.mine;
             const bucket = prev === picked ? null : picked;
             if (prev !== null) ph.counts[prev]--;
@@ -1591,6 +2096,71 @@
             } catch {
                 await loadEfforts(); // roll back to what the server has
                 refreshEffortBlocks(taskId);
+            }
+        });
+
+        // ── Start dates: update the interface on every edit, save shortly after ──
+        const fmtShort = dateStr => new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+        const startDateSaveTimers = {};
+
+        function applyStartDateLocally(taskId, startDate, sourceInput) {
+            const previous = startDates[taskId];
+            startDates[taskId] = { ...(previous || {}), startDate, votes: { ...(previous?.votes || {}), [voterId]: true } };
+            const e = allEvents.find(x => x.id === taskId);
+            const sel = `[data-task="${CSS.escape(taskId)}"]`;
+            // Every "Start date" field for this task (timeline card, pop-up): value + label, without
+            // re-rendering the field being edited (that would drop focus mid-typing)
+            document.querySelectorAll('.start-date-input' + sel).forEach(input => {
+                if (input !== sourceInput) input.value = startDate;
+                const display = input.closest('label')?.querySelector('.start-date-display');
+                if (display) display.textContent = fmtShort(startDate);
+            });
+            // Every "📅 start → deadline" line for this task
+            if (e) {
+                const endStr = new Date(e.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+                document.querySelectorAll('.event-timeline' + sel).forEach(el => { el.textContent = `📅 ${fmtShort(startDate)} → ${endStr}`; });
+            }
+            if (currentView === 'workload') renderWorkload(); // chart sits behind the pop-up, safe to redraw
+        }
+
+        async function saveStartDate(taskId, startDate) {
+            try {
+                const res = await fetch(API + '/start-dates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId, startDate, voterId })
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            } catch (err) {
+                console.error('Failed to save start date:', err);
+                alert('Could not save the start date (' + err.message + '). It is only changed in this browser tab.');
+            }
+        }
+
+        document.addEventListener('input', ev => {
+            const dateInput = ev.target.closest('.start-date-input');
+            if (!dateInput || !dateInput.value) return; // empty while a date is half typed
+            const taskId = dateInput.dataset.task, startDate = dateInput.value;
+            applyStartDateLocally(taskId, startDate, dateInput);
+            // Save once the user stops changing it, so typing or arrow-key stepping sends one request
+            clearTimeout(startDateSaveTimers[taskId]);
+            startDateSaveTimers[taskId] = setTimeout(() => saveStartDate(taskId, startDate), 600);
+        });
+
+        document.addEventListener('change', async ev => {
+            const numberInput = ev.target.closest('.effort-input');
+            if (numberInput) {
+                const taskId = numberInput.dataset.task;
+                const value = numberInput.value.trim();
+                const specificHours = value ? parseFloat(value) : null;
+                if (specificHours !== null && !isNaN(specificHours) && specificHours >= 0) {
+                    const ph = ((efforts[taskId] ||= {})['before'] ||= { counts: EFFORT_BUCKETS.map(() => 0), mine: null, specificHours: null });
+                    const phAfter = ((efforts[taskId] ||= {})['after'] ||= { counts: EFFORT_BUCKETS.map(() => 0), mine: null, specificHours: null });
+                    ph.specificHours = specificHours;
+                    phAfter.specificHours = specificHours;
+                    // Note: specific hours are saved locally but not persisted to server (can extend if needed)
+                    refreshEffortBlocks(taskId);
+                }
             }
         });
 
@@ -1626,15 +2196,20 @@
                 `<div class="modal-title">${title}</div>` +
                 groupByCourse(events).flatMap(g => g.events).map(e => {
                     const u = urgency(e.date);
+                    const startDate = startDateOf(e);
+                    const startDateObj = startDate ? new Date(startDate + 'T12:00:00') : null;
+                    const startDateStr = startDateObj ? startDateObj.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '';
+                    const startDateDisplay = startDateObj ? `<div class="event-timeline" data-task="${esc(e.id)}">📅 ${startDateStr} → ${new Date(e.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}</div>` : '';
                     return `<div class="event-card" style="animation:none;margin-bottom:6px">
                         <div class="urgency-bar bar-${u.cls}"></div>
                         <div class="event-body">
-                            <div class="event-title">${esc(e.summary)}</div>
+                            <div class="event-title">${esc(cleanSummary(e.summary))}</div>
                             <div class="event-meta">
                                 <span class="badge badge-${u.cls}">${u.label}</span>
                                 <span class="cal-chip" style="color:${e.color};border-color:${e.color}40">${esc(e.calName)}</span>
                                 ${eventTime(e) ? `<span class="event-time">${eventTime(e)}</span>` : ''}
                             </div>
+                            ${startDateDisplay}
                             ${e.description ? `<div class="event-desc">${esc(e.description)}</div>` : ''}
                             ${effortBlock(e)}
                         </div>
@@ -1662,6 +2237,11 @@
         function esc(s) {
             if (!s) return '';
             return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function cleanSummary(summary) {
+            if (!summary) return '';
+            return String(summary).replace(/\s*-\s*Verwacht\s*$/, '');
         }
             document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDayModal(); });
     </script>

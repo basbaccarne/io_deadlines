@@ -4,6 +4,8 @@
 //   POST /deadlines/fetch        { urls: [{ url, name? }] }
 //   GET  /deadlines/estimates?voter=…
 //   POST /deadlines/estimates    { taskId, voterId, phase, bucket }
+//   GET  /deadlines/start-dates
+//   POST /deadlines/start-dates  { taskId, startDate, voterId }
 // Saved custom feed lists (/api/calendars) live in the browser instead.
 import { parseICS } from './ics.ts';
 
@@ -19,9 +21,13 @@ const ALLOWED_ORIGINS: (string | RegExp)[] = [
 
 export interface Estimate { taskId: string; voterId: string; phase: string; bucket: number | null }
 export interface SummaryRow { task_id: string; phase: string; bucket: number; n: number; mine: boolean }
+export interface StartDate { taskId: string; startDate: string; voterId: string }
 export interface Store {
   save(e: Estimate): Promise<void>;
   rows(voterId: string): Promise<SummaryRow[]>;
+  // Start dates: taskId → { startDate, votes, updatedAt }
+  startDates(): Promise<Record<string, { startDate: string; votes: Record<string, boolean>; updatedAt: string }>>;
+  saveStartDate(s: StartDate): Promise<void>;
 }
 
 interface Options {
@@ -59,6 +65,12 @@ export function validEstimate(e: any): e is Estimate {
     && typeof e.voterId === 'string' && /^[\w-]{8,64}$/.test(e.voterId)
     && PHASES.includes(e.phase)
     && (e.bucket === null || (Number.isInteger(e.bucket) && e.bucket >= 0 && e.bucket < BUCKET_COUNT));
+}
+
+export function validStartDate(s: any): s is StartDate {
+  return !!s && typeof s.taskId === 'string' && s.taskId.length > 0 && s.taskId.length <= 500
+    && typeof s.startDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s.startDate)
+    && typeof s.voterId === 'string' && /^[\w-]{8,64}$/.test(s.voterId);
 }
 
 async function defaultFetchText(url: string): Promise<string> {
@@ -99,6 +111,14 @@ export function createHandler({ presets, store, fetchText = defaultFetchText }: 
         const e = await body();
         if (!validEstimate(e)) return json(400, { error: 'Invalid estimate' });
         await store.save(e);
+        return json(200, { ok: true });
+      }
+
+      if (route === '/start-dates' && req.method === 'GET') return json(200, await store.startDates());
+      if (route === '/start-dates' && req.method === 'POST') {
+        const s = await body();
+        if (!validStartDate(s)) return json(400, { error: 'Invalid start date' });
+        await store.saveStartDate(s);
         return json(200, { ok: true });
       }
 

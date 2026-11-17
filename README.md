@@ -1,21 +1,22 @@
 # IO Deadline Dashboard
 Dashboard for deadlines of io courses based on Ufora ICS calendar feeds.
 
-A local Node.js dashboard that fetches, parses, and combines ICS calendar feeds into a deadline overview.
+Fetches, parses and combines ICS calendar feeds into a deadline overview.
 
-🌐 Browser version: [Render Cloud Build](https://io-deadlines.onrender.com/)
+🌐 Live: https://industrialdesign.ugent.be/deadlines/
 
 <img src="img.png" alt="ICS Deadline Dashboard Screenshot" width="600">
 
-## Setup
+## Running it locally
 
 ```bash
-cd ics-dashboard
 npm install
 npm start
 ```
 
-Then open **http://localhost:3000** in your browser.
+Then open **http://localhost:3000**. `server.js` only serves the page here; the data still comes
+from the live Supabase function (it accepts requests from `localhost`), so changes you make
+locally (votes, start dates) are real.
 
 ## Usage
 
@@ -40,46 +41,36 @@ Clicking one loads its feeds; editing the list switches back to **Custom**. You 
 
 1. In Ufora, open the course → *Calendar* → *Subscribe*, and copy the feed URL (it contains the course's `feedOU=` number).
 2. Add it to `presets.yaml` under the right set, as a new `- https://…` line (indented two spaces). A URL listed twice is shown once.
-3. Update both versions:
-   - **Render:** commit and push `presets.yaml`. Render redeploys and the new feeds show up.
-   - **Webshare:** run `npm run deploy:fn`. The function has its own copy of `presets.yaml`, so without this step the webshare keeps showing the old sets. No need to copy `index.html` again.
-4. Check the set on both sites, e.g. https://io-deadlines.onrender.com/?set=1IO and
-   https://industrialdesign.ugent.be/deadlines/?set=1IO. The number of feeds appears when you hover over the set's button.
+3. Run `npm run deploy:fn`. The function has its own copy of `presets.yaml`, so without this step the site keeps showing the old sets. No need to copy `index.html` again.
+4. Check the set, e.g. https://industrialdesign.ugent.be/deadlines/?set=1IO. The number of feeds appears when you hover over the set's button.
 
 ## Features
 
-- Fetches ICS feeds server-side (no CORS issues)
+- Fetches ICS feeds server-side through the Supabase function (no CORS issues)
 - Combines multiple calendars into one unified timeline
 - Urgency grouping: overdue / today / next 3 days / next 2 weeks / later
 - Color-coded per calendar
 - Shows event time, description, and location when available
-- Persists your calendar URLs across restarts
+- Remembers your calendar URLs in your browser
 
 ### Student effort estimates
 
 Every deadline shows hour-range buttons (<1h, 1–3h, 3–8h, 8–20h, 20h+). Before the deadline students give the time they expect it to take, afterwards the time it actually took; both averages are shown on the item. Answers are anonymous (a random id per browser), and clicking your answer again removes it.
 
-Answers are stored in Postgres when `DATABASE_URL` is set (e.g. a free Supabase or Neon database; the table is created automatically). Without it they go to a local `estimates.json`, which is fine for local testing but is wiped on every Render redeploy.
+Answers are stored in the `effort_estimates` table in Supabase.
 
-On Render: *Environment → Add environment variable* → `DATABASE_URL` = the connection string of your database.
+### Start dates and the Workload view
 
-#### Supabase setup
+Each deadline has a *Start date* (when work on the assignment starts; defaults to two weeks before the deadline until someone sets it). The **Workload** tab draws every assignment as a bar from its start date to its deadline, one row each, sorted by deadline. The darker the bar, the more time students spend on it (specific hours if set, otherwise the average estimate); a faint outline means no estimate yet.
 
-1. Create a project at [supabase.com](https://supabase.com) (region: *Central EU (Frankfurt)*), and note the database password.
-2. Click **Connect** (top of the project) → **Session pooler** and copy the URI:
-   `postgresql://postgres.<project-ref>:[YOUR-PASSWORD]@aws-0-eu-central-1.pooler.supabase.com:5432/postgres`
-   Use the *session pooler*, not the *direct connection*: the direct one is IPv6-only and Render can't reach it.
-3. Replace `[YOUR-PASSWORD]` with your password (URL-encode special characters, e.g. `@` → `%40`).
-4. Put the URI in `DATABASE_URL` on Render and deploy. The logs should show `Effort estimates: Postgres connected`; the `effort_estimates` table then appears in Supabase's *Table Editor*.
+Start dates are stored in the `event_start_dates` table in Supabase.
 
 Free Supabase projects pause after a week without activity; restore them from the dashboard.
 
 ## Hosting on the UGent webshare
 
-The same `index.html` also runs on https://industrialdesign.ugent.be/deadlines/. The webshare
-can't fetch the feeds itself, so there the page calls the Supabase function in
-`supabase/functions/deadlines` instead of `/api`. It shares the `effort_estimates` table with
-Render.
+The webshare only serves static files and can't fetch the feeds itself, so the page talks to the
+Supabase function in `supabase/functions/deadlines`.
 
 - **After changing `presets.yaml` or the function:** `npm run deploy:fn` (needs `npx supabase login` once).
 - **After changing `index.html`:** copy it to the webshare's `deadlines` folder.

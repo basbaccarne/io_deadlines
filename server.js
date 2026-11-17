@@ -10,6 +10,72 @@ const ESTIMATES_FILE = path.join(__dirname, 'estimates.json');
 const PHASES = ['before', 'after'];
 const BUCKET_COUNT = 5; // <1h, 1–3h, 3–8h, 8–20h, 20h+ (labels live in index.html)
 
+// Start dates per event: taskId → { startDate: YYYY-MM-DD, votes: { voterId: true } }
+const startDatesMap = process.env.DATABASE_URL ? pgStartDates(process.env.DATABASE_URL) : fileStartDates(path.join(__dirname, 'start-dates.json'));
+
+function fileStartDates(file) {
+  const load = () => { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return {}; } };
+  return {
+    async get() { return load(); },
+    async add({ taskId, startDate, voterId }) {
+      const data = load();
+      const item = data[taskId] ||= { startDate: null, votes: {}, updatedAt: null };
+      item.startDate = startDate;
+      item.updatedAt = new Date().toISOString();
+      item.votes[voterId] = true;
+      fs.writeFileSync(file, JSON.stringify(data));
+      return item;
+    },
+  };
+}
+
+function pgStartDates(connectionString) {
+  const { Pool } = require('pg');
+  const local = /@(localhost|127\.0\.0\.1)[:/]/.test(connectionString);
+  const pool = new Pool({ connectionString, ssl: local ? false : { rejectUnauthorized: false } });
+  pool.on('error', err => console.error('Postgres pool error:', err.message));
+
+  let tableReady = null;
+  const ready = () => tableReady ||= pool.query(`
+    CREATE TABLE IF NOT EXISTS event_start_dates (
+      task_id    TEXT NOT NULL PRIMARY KEY,
+      start_date TEXT NOT NULL,
+      votes      JSONB DEFAULT '{}'::JSONB,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    ALTER TABLE event_start_dates ENABLE ROW LEVEL SECURITY;
+  `).catch(err => { tableReady = null; throw err; });
+
+  ready().catch(err => console.error('   Start dates: Postgres error:', err.message));
+
+  return {
+    async get() {
+      try {
+        await ready();
+        const { rows } = await pool.query('SELECT task_id, start_date, votes, updated_at FROM event_start_dates');
+        const result = {};
+        rows.forEach(r => { result[r.task_id] = { startDate: r.start_date, votes: r.votes || {}, updatedAt: r.updated_at.toISOString() }; });
+        return result;
+      } catch { return {}; }
+    },
+    async add({ taskId, startDate, voterId }) {
+      try {
+        await ready();
+        const { rows } = await pool.query(
+          `INSERT INTO event_start_dates (task_id, start_date, votes) VALUES ($1, $2, $3)
+           ON CONFLICT (task_id) DO UPDATE SET start_date = EXCLUDED.start_date, votes = EXCLUDED.votes, updated_at = now()
+           RETURNING start_date, votes, updated_at`,
+          [taskId, startDate, JSON.stringify({ [voterId]: true })]
+        );
+        return { startDate: rows[0].start_date, votes: rows[0].votes, updatedAt: rows[0].updated_at.toISOString() };
+      } catch (err) {
+        console.error('Start dates: add failed:', err.message);
+        throw err;
+      }
+    },
+  };
+}
+
 // ── Effort estimates: Postgres when DATABASE_URL is set, else a local JSON file ──
 const estimates = process.env.DATABASE_URL ? pgStore(process.env.DATABASE_URL) : fileStore(ESTIMATES_FILE);
 
@@ -98,6 +164,12 @@ function validEstimate({ taskId, voterId, phase, bucket }) {
     && typeof voterId === 'string' && /^[\w-]{8,64}$/.test(voterId)
     && PHASES.includes(phase)
     && (bucket === null || (Number.isInteger(bucket) && bucket >= 0 && bucket < BUCKET_COUNT));
+}
+
+function validStartDate({ taskId, startDate, voterId }) {
+  return typeof taskId === 'string' && taskId.length > 0 && taskId.length <= 500
+    && typeof startDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(startDate)
+    && typeof voterId === 'string' && /^[\w-]{8,64}$/.test(voterId);
 }
 
 function loadCalendars() {
@@ -193,6 +265,15 @@ http.createServer(async (req, res) => {
         }
       }
       return json(res, 200, results);
+    }
+    if (pathname === '/api/start-dates' && req.method === 'GET') {
+      return json(res, 200, await startDatesMap.get());
+    }
+    if (pathname === '/api/start-dates' && req.method === 'POST') {
+      const body = await readBody(req);
+      if (!validStartDate(body)) return json(res, 400, { error: 'Invalid start date' });
+      await startDatesMap.add(body);
+      return json(res, 200, { ok: true });
     }
     serveFile(res, path.join(__dirname, 'index.html'));
   } catch (err) {
